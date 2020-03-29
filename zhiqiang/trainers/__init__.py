@@ -2,20 +2,16 @@
 
 from abc import ABCMeta, abstractmethod
 
-class AbstractAgent(metaclass=ABCMeta):
+class AbstractTrainer(metaclass=ABCMeta):
     """
     """
-    def __init__(self, settings):
+    def __init__(self, settings, agent, env, buffer):
         """
         """
-        pass
-
-    @abstractmethod
-    def infer(self, state):
         pass
 
     @abstractmethod
     def train(self):
+        """
+        """
         pass
-
-    

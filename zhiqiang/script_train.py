@@ -3,6 +3,8 @@
 env_type = "grid_world"
 agent_type = "dqn"
 buffer_type = "replay_buffer"
+trainer_type = "simple_trainer"
+
 
 settings_file = "file_path"
 
@@ -17,7 +19,9 @@ if agent_type == "dqn":
 if buffer_type == "replay_buffer":
     from replay_buffers.replay_buffer import ReplayBuffer as Buffer
 #
-
+if trainer_type == "simple_trainer":
+    from trainers.simple_trainer import SimpleTrainer as Trainer
+#
 
 #
 from utils import load_settings
@@ -29,8 +33,9 @@ settings = load_settings(settings_file)
 #
 env = Env(settings)
 buffer = Buffer(settings)
+agent = Agent(settings)
 #
-agent = Agent(settings, env, buffer)
+trainer = Trainer(settings, agent, env, buffer)
 #
-agent.train()
+trainer.train()
 #
