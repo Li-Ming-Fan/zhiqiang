@@ -15,7 +15,15 @@ class AbstractAgent(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def train(self):
+    def generate(self, env):
+        """ generate experience
+        """
+        pass
+
+    @abstractmethod
+    def optimize(self, buffer):
+        """ optimization step
+        """
         pass
 
     

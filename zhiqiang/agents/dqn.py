@@ -15,4 +15,22 @@ class DQN(AbstractAgent):
         """
         pass
 
+    #
+    def infer(self, state):
+        pass
+
+    #
+    def generate(self, env):
+        """ generate experience
+        """
+        pass
+
+    #
+    def optimize(self, buffer):
+        """ optimization step
+        """
+        pass
+
+
+
     

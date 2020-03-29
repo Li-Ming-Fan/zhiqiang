@@ -3,15 +3,20 @@
 class Settings():
     """
     """
-    def __init__(self, file_path):
+    def __init__(self, file_path=None):
         """
         """
-        self.num_boost = 1000
-        self.num_generation = 100
-        self.num_train_steps = 100
-
+        self.agent_settings = {}
+        self.env_settings = {}
+        self.buffer_settings = {"buffer_size": 5000}
+        self.trainer_settings = {}
         #
-        self.load_from_json(file_path)
+        self.trainer_settings["num_boost"] = 1000
+        self.trainer_settings["num_gen"] = 100
+        self.trainer_settings["num_optim"] = 100
+        #
+        if file_path is not None:
+            self.load_from_json(file_path)
         #
 
     def save_to_json(self, file_path):
@@ -23,5 +28,7 @@ class Settings():
         """
         """
         pass
+
+    
 
     
