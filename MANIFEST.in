@@ -10,3 +10,4 @@ recursive-exclude * *.py[co]
 recursive-exclude * __pycache__/
 recursive-exclude aaa_store *
 recursive-exclude data_root *
+recursive-exclude examples *
