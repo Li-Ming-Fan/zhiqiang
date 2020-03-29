@@ -2,6 +2,17 @@
 
 from agents import AbstractAgent
 
+
+class ModelQNet(object):
+    """
+    """
+    def __init__(self, settings):
+        """
+        """
+        pass
+
+
+
 class DQN(AbstractAgent):
     """
     """
@@ -9,11 +20,6 @@ class DQN(AbstractAgent):
         """
         """
         self.settings = settings
-
-    def build_q_net(self):
-        """
-        """
-        pass
 
     #
     def generate(self, env):

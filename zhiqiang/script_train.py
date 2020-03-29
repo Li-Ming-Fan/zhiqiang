@@ -16,9 +16,10 @@ trainer_type = "simple_trainer"
 dir_data_root = "./data_root"
 dir_rel_settings = "settings"
 #
-print(os.path.abspath(dir_data_root))
-#
 settings_filepath = os.path.join(dir_data_root, dir_rel_settings, settings_filename)
+#
+print(os.path.abspath(dir_data_root))
+print(settings_filepath)
 #
 
 ##
@@ -45,6 +46,8 @@ assert False, ""
 settings = BasicSettings(settings_filepath)
 settings.dir_base = dir_data_root
 settings.dir_rel_settings = dir_rel_settings
+settings.check_settings()
+settings.display()
 #
 env = Env(settings)
 buffer = Buffer(settings)
