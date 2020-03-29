@@ -2,7 +2,7 @@
 
 import os
 from utils import get_package_root_dir
-from utils.basic_settings import Settings
+from utils.basic_settings import BasicSettings
 
 
 #
@@ -12,7 +12,7 @@ buffer_type = "simple_buffer"
 trainer_type = "simple_trainer"
 
 dir_data_root = get_package_root_dir()
-settings_filename = "file_name"
+settings_filename = "settings_dqn.json"
 
 
 #
@@ -31,7 +31,7 @@ if trainer_type == "simple_trainer":
 
 ##
 settings_filepath = os.path.join(dir_data_root, "settings", settings_filename)
-settings = Settings(settings_filepath)
+settings = BasicSettings(settings_filepath)
 #
 env = Env(settings)
 buffer = Buffer(settings)

@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 
 from envs import AbstractEnv
 
-class GameItem():
+
+class GridItem():
     def __init__(self,coordinates,size,intensity,channel,reward,name):
         self.x = coordinates[0]
         self.y = coordinates[1]
@@ -16,47 +17,61 @@ class GameItem():
         self.reward = reward
         self.name = name
         
-class GameWorld(AbstractEnv):
-    def __init__(self, size, partial):
-        self.sizeX = size
-        self.sizeY = size
+class GridWorld(AbstractEnv):
+    """
+    """
+    def __init__(self, settings):
+        """
+        """
+        self.settings = settings
+        self.sizeX = self.settings.env_settings["size"]
+        self.sizeY = self.settings.env_settings["size"]
         self.actions = 4
         self.objects = []
-        self.partial = partial
+        self.partial = self.settings.env_settings["partial"]
         #
         self.reset()        
         #
+
+    def display(self):
+        """
+        """
         plt.figure()
-        plt.imshow(self.mapToPic(self.state), interpolation="nearest")
+        plt.imshow(self.map_to_pic(self.state), interpolation="nearest")
         plt.show()
         #
         
     def reset(self):
+        """
+        """
         self.objects = []
-        hero = GameItem(self.newPosition(),1,1,2,None,'hero')
+        #
+        hero = GridItem(self.get_new_posi(),1,1,2,None,'hero')
         self.objects.append(hero)
-        food = GameItem(self.newPosition(),1,1,1,1,'goal')
+        #
+        food = GridItem(self.get_new_posi(),1,1,1,1,'food')
         self.objects.append(food)
-        pois = GameItem(self.newPosition(),1,1,0,-1,'fire')
-        self.objects.append(pois)
-        food2 = GameItem(self.newPosition(),1,1,1,1,'goal')
+        food2 = GridItem(self.get_new_posi(),1,1,1,1,'food')
         self.objects.append(food2)
-        pois2 = GameItem(self.newPosition(),1,1,0,-1,'fire')
-        self.objects.append(pois2)
-        food3 = GameItem(self.newPosition(),1,1,1,1,'goal')
+        food3 = GridItem(self.get_new_posi(),1,1,1,1,'food')
         self.objects.append(food3)
-        food4 = GameItem(self.newPosition(),1,1,1,1,'goal')
+        food4 = GridItem(self.get_new_posi(),1,1,1,1,'food')
         self.objects.append(food4)
+        #
+        pois = GridItem(self.get_new_posi(),1,1,0,-1,'fire')
+        self.objects.append(pois)
+        pois2 = GridItem(self.get_new_posi(),1,1,0,-1,'fire')
+        self.objects.append(pois2)        
         #    
-        return self.renderWorld()
+        return self.render_world()
         #
     
-    def renderWorld(self):
-        # further simplification
-        # a = np.ones([self.sizeY, self.sizeX, 3])
-        a = np.ones([self.sizeY+2, self.sizeX+2, 3]);
-        a[1:-1,1:-1,:] = 0;
-        hero = None;
+    def render_world(self):
+        """
+        """
+        a = np.ones([self.sizeY+2, self.sizeX+2, 3])
+        a[1:-1,1:-1,:] = 0
+        hero = None
         for item in self.objects:
             a[item.y+1:item.y+item.size+1,\
               item.x+1:item.x+item.size+1,\
@@ -66,40 +81,49 @@ class GameWorld(AbstractEnv):
         if self.partial == True:
             a = a[hero.y:hero.y+3,hero.x:hero.x+3,:]                    
         #
-        self.state = a;
-        return a;
+        self.state = a
+        return a
         #
     
-    def mapToPic(self, state):
+    def map_to_pic(self, state):
+        """
+        """
         b = scipy.misc.imresize(state[:,:,0],[84,84,1],interp='nearest')
         c = scipy.misc.imresize(state[:,:,1],[84,84,1],interp='nearest')
         d = scipy.misc.imresize(state[:,:,2],[84,84,1],interp='nearest')
         pic = np.stack([b,c,d], axis=2)
         #        
-        return pic;
+        return pic
     
-    def newPosition(self):
+    def get_new_posi(self):
+        """
+        """
         iterables = [range(self.sizeX), range(self.sizeY)]
         points = []
         for t in itertools.product(*iterables):
             points.append(t)
-        currentPositions = []
-        for objectA in self.objects:
-            if (objectA.x,objectA.y) not in currentPositions:
-                currentPositions.append((objectA.x,objectA.y))
-        for pos in currentPositions:
+        current_positions = []
+        for object_a in self.objects:
+            if (object_a.x,object_a.y) not in current_positions:
+                current_positions.append((object_a.x,object_a.y))
+        for pos in current_positions:
             points.remove(pos)
         location = np.random.choice(range(len(points)),replace=False)
         return points[location]
         
+    #
     def execute_action(self, action):
-        penalty = self.moveChar(action)
-        reward,done = self.checkGoal()
-        state = self.renderWorld()
+        """
+        """
+        penalty = self.move_char(action)
+        reward, done = self.check_reward()
+        state = self.render_world()
         #
-        return state,(reward+penalty),done
+        return state, (reward+penalty), done
         
-    def moveChar(self,direction):
+    def move_char(self, direction):
+        """
+        """
         # 0 - up, 1 - down, 2 - left, 3 - right
         hero = self.objects[0]
         heroX = hero.x
@@ -118,25 +142,26 @@ class GameWorld(AbstractEnv):
         self.objects[0] = hero
         return penalize
     
-    def checkGoal(self):
+    def check_reward(self):
+        """
+        """
         others = []
         for obj in self.objects:
             if obj.name == 'hero':
                 hero = obj
             else:
                 others.append(obj)
-        #ended = False
+        #
         for other in others:
             if hero.x == other.x and hero.y == other.y:
                 self.objects.remove(other)
                 if other.reward == 1:
-                    self.objects.append(GameItem(self.newPosition(),1,1,1,1,'goal'))
+                    self.objects.append(GameItem(self.get_new_posi(),1,1,1,1,'food'))
                 else: 
-                    self.objects.append(GameItem(self.newPosition(),1,1,0,-1,'fire'))
-                return other.reward,False
+                    self.objects.append(GameItem(self.get_new_posi(),1,1,0,-1,'fire'))
+                return other.reward, False
         else:
             return 0.0, False
-        #if ended == False:
-        #    return 0.0,False
+        #
 
-    
+#
