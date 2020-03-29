@@ -24,9 +24,9 @@ if trainer_type == "simple_trainer":
 #
 
 #
-from utils import load_settings
+from utils.basic_settings import Settings
 #
-settings = load_settings(settings_file)
+settings = Settings(settings_file)
 #
 
 
