@@ -25,8 +25,7 @@ class BasicSettings():
         self.trainer_settings["num_gen"] = 100
         self.trainer_settings["num_optim"] = 100
         #
-        if file_path is not None:
-            self.load_from_json(file_path)
+        self.load_from_json_file(file_path)
         #
         # except from saving
         self.except_list = ["dir_base", "dir_log", "dir_settings", "dir_model",
@@ -140,8 +139,7 @@ class BasicSettings():
         """
         """
         if file_path is None:
-            print("model settings file: %s NOT found, using default settings"
-                  % file_path)
+            print("settings file: %s NOT found, using default settings" % file_path)
             return
         #
         with open(file_path, "r", encoding="utf-8") as fp:
