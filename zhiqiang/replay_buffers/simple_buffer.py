@@ -2,7 +2,7 @@
 import numpy as np
 
 
-from replay_buffers import AbstractBuffer
+from zhiqiang.replay_buffers import AbstractBuffer
 
 
 class SimpleBuffer(AbstractBuffer):

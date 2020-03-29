@@ -1,5 +1,7 @@
 
 
+from zhiqiang.trainers import AbstractTrainer
+
 class SimpleTrainer():
     """
     """

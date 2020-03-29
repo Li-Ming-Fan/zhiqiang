@@ -4,7 +4,7 @@ import itertools
 import scipy.misc
 import matplotlib.pyplot as plt
 
-from envs import AbstractEnv
+from zhiqiang.envs import AbstractEnv
 
 
 class GridItem():

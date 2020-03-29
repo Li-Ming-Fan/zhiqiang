@@ -1,6 +1,6 @@
 
 
-from agents import AbstractAgent
+from zhiqiang.agents import AbstractAgent
 
 
 class ModelQNet(object):
