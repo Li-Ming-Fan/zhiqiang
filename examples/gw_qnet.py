@@ -22,7 +22,7 @@ class GridWorldQNet(AbstractQNet):
         """
         pass
 
-    def optimize(self, batch_data):
+    def backward(self, loss):
         """
         """
         pass

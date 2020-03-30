@@ -91,7 +91,7 @@ class DoubleDQN(AbstractAgent):
         loss = target - np.array(s_exe_av)    # [B, ]
         loss = np.mean(loss ** 2)
         #
-        self.qnet_action.optimize(loss)
+        self.qnet_action.backward(loss)
         self.qnet_target.merge_weights(self.qnet_action, self.merge_alpha)
         #
 

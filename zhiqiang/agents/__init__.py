@@ -18,6 +18,12 @@ class AbstractAgent(metaclass=ABCMeta):
         """
         pass
 
+    @abstractmethod
+    def eval(self, env, observation=None):
+        """
+        """
+        pass
+
     #
     @abstractmethod
     def generate(self, env, observation=None):
@@ -57,7 +63,7 @@ class AbstractQNet(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def optimize(self, loss):
+    def backward(self, loss):
         """
         """
         pass
