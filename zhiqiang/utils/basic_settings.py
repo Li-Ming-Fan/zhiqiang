@@ -149,7 +149,6 @@ class BasicSettings():
         self.assign_info_from_dict(info_dict)
         #
 
-
    
 #       
 if __name__ == '__main__':

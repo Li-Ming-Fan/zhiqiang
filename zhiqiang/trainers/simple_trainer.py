@@ -25,13 +25,13 @@ class SimpleTrainer():
         for idx_boost in range(num_boost):
             # generate experience
             for idx_gen in range(num_gen):
-                experience = self.agent.generate(self.env)
-                self.buffer.add(experience)
+                list_experience = self.agent.generate(self.env)
+                self.buffer.add(list_experience)
             # optimize
             for idx_optim in range(num_optim):
                 batch_data = self.buffer.sample(batch_size)
-                batch = self.agent.standardize_batch(batch_data)
-                self.agent.optimize(batch)
+                batch_std = self.agent.standardize_batch(batch_data)
+                self.agent.optimize(batch_std, self.buffer)
             #
         #
 

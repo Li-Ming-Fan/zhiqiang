@@ -5,7 +5,7 @@ from abc import ABCMeta, abstractmethod
 class AbstractTrainer(metaclass=ABCMeta):
     """
     """
-    def __init__(self, settings, agent, env, buffer):
+    def __init__(self):
         """
         """
         pass
