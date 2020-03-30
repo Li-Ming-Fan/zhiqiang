@@ -8,7 +8,7 @@ settings.env_settings["partial"] = False
 
 from grid_world import GridWorld
 env = GridWorld(settings)
-# env.display()
+env.display()
 
 
 import numpy as np

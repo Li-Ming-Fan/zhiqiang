@@ -6,8 +6,8 @@ from zhiqiang.utils.basic_settings import BasicSettings
 
 #
 env_type = "grid_world"
-agent_type = "dqn"
-settings_filename = "settings_dqn.json"
+agent_type = "dqn_vanila"
+settings_filename = "settings_dqn_vanila.json"
 #
 buffer_type = "simple_buffer"
 trainer_type = "simple_trainer"
@@ -25,9 +25,10 @@ print(settings_filepath)
 ##
 if env_type == "grid_world":
     from grid_world import GridWorld as Env
+    from gw_qnet import GridWorldQNet as QNet
 #
-if agent_type == "dqn":
-    from dqn import DQN as Agent
+if agent_type == "dqn_vanila":
+    from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
 #
 
 ##
@@ -36,10 +37,6 @@ if buffer_type == "simple_buffer":
 #
 if trainer_type == "simple_trainer":
     from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
-#
-
-#
-assert False, ""
 #
 
 ##
@@ -52,9 +49,9 @@ settings.display()
 #
 env = Env(settings)
 buffer = Buffer(settings)
-agent = Agent(settings)
+agent = Agent(settings, QNet)
 #
 trainer = Trainer(settings, agent, env, buffer)
 #
-trainer.train()
+# trainer.train()
 #

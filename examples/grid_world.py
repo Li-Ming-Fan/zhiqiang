@@ -32,14 +32,6 @@ class GridWorld(AbstractEnv):
         #
         self.reset()        
         #
-
-    def display(self):
-        """
-        """
-        plt.figure()
-        plt.imshow(self.map_to_pic(self.state), interpolation="nearest")
-        plt.show()
-        #
         
     def reset(self):
         """
@@ -63,10 +55,10 @@ class GridWorld(AbstractEnv):
         pois2 = GridItem(self.get_new_posi(),1,1,0,-1,'fire')
         self.objects.append(pois2)        
         #    
-        return self.render_world()
+        return self.render()
         #
     
-    def render_world(self):
+    def render(self):
         """
         """
         a = np.ones([self.sizeY+2, self.sizeX+2, 3])
@@ -94,6 +86,14 @@ class GridWorld(AbstractEnv):
         pic = np.stack([b,c,d], axis=2)
         #        
         return pic
+
+    def display(self):
+        """
+        """
+        plt.figure()
+        plt.imshow(self.map_to_pic(self.state), interpolation="nearest")
+        plt.show()
+        #
     
     def get_new_posi(self):
         """
@@ -112,16 +112,16 @@ class GridWorld(AbstractEnv):
         return points[location]
         
     #
-    def execute_action(self, action):
+    def step(self, action):
         """
         """
-        penalty = self.move_char(action)
+        penalty = self.move_hero(action)
         reward, done = self.check_reward()
-        state = self.render_world()
+        state = self.render()
         #
-        return state, (reward+penalty), done
+        return state, (reward+penalty), done, None
         
-    def move_char(self, direction):
+    def move_hero(self, direction):
         """
         """
         # 0 - up, 1 - down, 2 - left, 3 - right
@@ -163,5 +163,8 @@ class GridWorld(AbstractEnv):
         else:
             return 0.0, False
         #
+
+    def close(self):
+        pass
 
 #
