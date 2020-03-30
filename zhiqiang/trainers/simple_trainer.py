@@ -30,8 +30,7 @@ class SimpleTrainer():
             # optimize
             for idx_optim in range(num_optim):
                 batch_data = self.buffer.sample(batch_size)
-                batch_std = self.agent.standardize_batch(batch_data)
-                self.agent.optimize(batch_std, self.buffer)
+                self.agent.optimize(batch_data, self.buffer)
             #
         #
 

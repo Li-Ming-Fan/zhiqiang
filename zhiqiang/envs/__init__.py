@@ -1,6 +1,7 @@
 
 from abc import ABCMeta, abstractmethod
 
+
 class AbstractEnv(metaclass=ABCMeta):
     """
     """
@@ -11,13 +12,13 @@ class AbstractEnv(metaclass=ABCMeta):
 
     @abstractmethod    
     def reset(self):
-        """
+        """ return: observation
         """
         pass
 
     @abstractmethod    
     def step(self, action):
-        """
+        """ return: observation, reward, done, info
         """
         pass
 

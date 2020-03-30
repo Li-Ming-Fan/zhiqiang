@@ -7,7 +7,7 @@ A package for reinforcement learning algorithms. PyTorch.
 
 ## Description
 
-Abstract classes to define customized modules:
+Abstract classes that form the framework:
 ```
 from zhiqiang.agents import AbstractAgent
 from zhiqiang.envs import AbstractEnv
@@ -15,13 +15,19 @@ from zhiqiang.replay_buffers import AbstractBuffer
 from zhiqiang.trainers import AbstractTrainer
 ```
 
-Implemented classes:
+Implemented Trainers and Buffers:
 ```
-from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
 from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
+from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
+from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
 ```
 
-For examples, please see files in examples/.
+Implemented Agents:
+```
+from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
+from zhiqiang.agents.dqn_double import DoubleDQN as Agent
+
+```
 
 
 ## Installation

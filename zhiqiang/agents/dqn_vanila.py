@@ -2,42 +2,94 @@
 
 from zhiqiang.agents import AbstractAgent
 
-
-class ModelQNet(object):
-    """
-    """
-    def __init__(self, settings):
-        """
-        """
-        pass
+import numpy as np
 
 
-
-class DQN(AbstractAgent):
+class VanilaDQN(AbstractAgent):
     """
     """
-    def __init__(self, settings):
+    def __init__(self, settings, qnet_class):
         """
         """
         self.settings = settings
+        self.qnet_action = qnet_class(self.settings.agent_settings)
+        self.qnet_target = qnet_class(self.settings.agent_settings)
+        self.merge_alpha = self.settings.agent_settings["merge_alpha"]
+        #
+        self.policy_greedy = self.settings.agent_settings["policy_greedy"]
+        self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
+        self.num_actions = self.settings.agent_settings["num_actions"]
+        self.gamma = self.settings.agent_settings["gamma"]
+        #
+        self.max_step_gen = self.settings.agent_settings["max_step_gen"]
+        #
+
+    def act(self, observation):
+        """
+        """
+        batch_std = self.qnet_action.trans_list_observation([observation])
+        inference = self.qnet_action.infer(batch_std)
+        #
+        action_values = inference[0]
+        if self.policy_greedy or np.random.rand() > self.policy_epsilon:
+            return np.argmax(action_values)
+        else:
+            return np.random.randint(self.num_actions)
+        #
 
     #
-    def generate(self, env):
-        """ generate experience
+    def generate(self, env, observation=None):
+        """ generate experience, (s, a, r, s', info)
         """
-        pass
+        list_transition = []
+        count = 0
+        #
+        if observation is None:
+            observation = env.reset()
+        #
+        done = False
+        while not done:
+            action = self.qnet_action(observation)
+            sp, reward, done, info = env.step(action)
+            exp = (observation, action, reward, sp, info)
+            observation = sp
+            #
+            list_transition.append(exp)
+            count += 1
+            #
+            if count >= self.max_step_gen: break
+            #
+        #
+        return list_transition
 
     #
-    def standardize_batch(self, batch_data):
-        """ trans batch_data to batch for model
-        """
-        pass
-
-    def optimize(self, batch):
+    def optimize(self, batch_data):
         """ optimization step
+            batch_data["data"]: list of (s, a, r, s', info)
         """
-        pass
+        list_s, list_a, list_r, list_p, list_info = list(zip(*batch_data["data"]))
+        #
+        # s
+        s_std = self.qnet_action.trans_list_observation(list_s)
+        s_av = self.qnet_action.infer(s_std)
+        s_exe_av = [s_av[idx][a] for idx, a in enumerate(list_a)]
+        #
+        # s'
+        p_std = self.qnet_action.trans_list_observation(list_p)
+        p_av = self.qnet_target.infer(p_std)   # [B, A]
+        #
+        # max value (action) at state s'
+        max_p_av = np.max(p_av, -1)
+        #
+        # target
+        target = np.array(list_r) + self.gamma * max_p_av
+        #
+        # loss
+        loss = target - np.array(s_exe_av)    # [B, ]
+        loss = np.mean(loss ** 2)
+        #
+        self.qnet_action.optimize(loss)
+        self.qnet_target.merge_weights(self.qnet_action, self.merge_alpha)
+        #
 
 
-
-    
