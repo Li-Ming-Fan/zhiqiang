@@ -43,7 +43,7 @@ list_x = [idx * eval_period for idx in range(len(list_aver_rewards))]
 #
 plt.plot(num_hop, list_aver_rewards, label="Averaged Rewards", color="k", linewidth=2)
 plt.xlabel("Number Boost")
-plt.ylabel("Averaged Rewards")  # plt.title("Boost curriculum")
+plt.ylabel("Averaged Rewards")  # plt.title("Boost Curriculum")
 plt.xticks(list_x)              # plt.legend()
 plt.grid()
 plt.show()
