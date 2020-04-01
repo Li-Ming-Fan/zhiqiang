@@ -2,7 +2,7 @@
 
 zhiqiang, 之强, become strong. Similar to ziqiang, 自强, Self-strengthening.
 
-A package for reinforcement learning algorithms. PyTorch.
+A package for reinforcement learning algorithms. PyTorch / Tensorflow.
 
 
 ## Description

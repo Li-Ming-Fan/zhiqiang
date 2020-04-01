@@ -11,7 +11,7 @@ class AbstractBuffer(metaclass=ABCMeta):
         pass
 
     @abstractmethod    
-    def add(self, list_experience):
+    def add(self, list_experiences):
         """
         """
         pass

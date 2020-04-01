@@ -1,7 +1,7 @@
 {
     "agent_settings": {
-        "name": "agentname",
-        "merge_alpha": 0.5,
+        "name": "VanilaDQN",
+        "merge_ksi": 0.5,
         "policy_greedy": 0,
         "policy_epsilon": 0.1,
         "num_actions": 4,
@@ -9,7 +9,7 @@
         "max_step_gen": 1000
     },
     "env_settings": {
-        "name": "envname",
+        "name": "GridWorld",
         "size": 5,
         "partial": 0
     },
@@ -19,6 +19,9 @@
     "trainer_settings": {
         "num_boost": 1000,
         "num_gen": 100,
-        "num_optim": 100
+        "num_optim": 100,
+        "batch_size": 32,
+        "eval_period": 5,
+        "num_eval_rollout": 10
     }
 }

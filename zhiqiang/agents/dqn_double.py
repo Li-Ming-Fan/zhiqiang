@@ -14,7 +14,7 @@ class DoubleDQN(AbstractAgent):
         self.settings = settings
         self.qnet_action = qnet_class(self.settings.agent_settings)
         self.qnet_target = qnet_class(self.settings.agent_settings)
-        self.merge_alpha = self.settings.agent_settings["merge_alpha"]
+        self.merge_ksi = self.settings.agent_settings["merge_ksi"]
         #
         self.policy_greedy = self.settings.agent_settings["policy_greedy"]
         self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
@@ -27,7 +27,7 @@ class DoubleDQN(AbstractAgent):
     def act(self, observation):
         """
         """
-        batch_std = self.qnet_action.trans_list_observation([observation])
+        batch_std = self.qnet_action.trans_list_observations([observation])
         inference = self.qnet_action.infer(batch_std)
         #
         action_values = inference[0]
@@ -41,7 +41,7 @@ class DoubleDQN(AbstractAgent):
     def generate(self, env, observation=None):
         """ generate experience, (s, a, r, s', info)
         """
-        list_transition = []
+        list_transitions = []
         count = 0
         #
         if observation is None:
@@ -49,18 +49,18 @@ class DoubleDQN(AbstractAgent):
         #
         done = False
         while not done:
-            action = self.qnet_action(observation)
+            action = self.act(observation)
             sp, reward, done, info = env.step(action)
             exp = (observation, action, reward, sp, info)
             observation = sp
             #
-            list_transition.append(exp)
+            list_transitions.append(exp)
             count += 1
             #
             if count >= self.max_step_gen: break
             #
         #
-        return list_transition
+        return list_transitions
 
     #
     def optimize(self, batch_data):
@@ -70,12 +70,12 @@ class DoubleDQN(AbstractAgent):
         list_s, list_a, list_r, list_p, list_info = list(zip(*batch_data["data"]))
         #
         # s
-        s_std = self.qnet_action.trans_list_observation(list_s)
+        s_std = self.qnet_action.trans_list_observations(list_s)
         s_av = self.qnet_action.infer(s_std)
         s_exe_av = [s_av[idx][a] for idx, a in enumerate(list_a)]
         #
         # s'
-        p_std = self.qnet_action.trans_list_observation(list_p)
+        p_std = self.qnet_action.trans_list_observations(list_p)
         #
         # decoupled
         p_av_action = self.qnet_action.infer(p_std)     # [B, A]
@@ -91,8 +91,8 @@ class DoubleDQN(AbstractAgent):
         loss = target - np.array(s_exe_av)    # [B, ]
         loss = np.mean(loss ** 2)
         #
-        self.qnet_action.backward(loss)
-        self.qnet_target.merge_weights(self.qnet_action, self.merge_alpha)
+        self.qnet_action.back_propagte(loss)
+        self.qnet_target.merge_weights(self.qnet_action, self.merge_ksi)
         #
 
 

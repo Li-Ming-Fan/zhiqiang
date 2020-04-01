@@ -14,16 +14,16 @@ class SimpleBuffer(AbstractBuffer):
         self.buffer_size = settings.buffer_settings["buffer_size"]
         self.buffer_list = []
     
-    def add(self, list_experience):
+    def add(self, list_experiences):
         """
         """
         len_buffer = len(self.buffer_list)
-        len_exp = len(list_experience)
+        len_exp = len(list_experiences)
         #
         if len_buffer + len_exp >= self.buffer_size:
-            self.buffer[0:len_buffer + len_exp - self.buffer_size] = []
+            self.buffer_list[0:len_buffer + len_exp - self.buffer_size] = []
         #
-        self.buffer_list.extend(list_experience)
+        self.buffer_list.extend(list_experiences)
         #
             
     def sample(self, size):

@@ -77,6 +77,20 @@ class GridWorld(AbstractEnv):
         return a
         #
     
+    def step(self, action):
+        """
+        """
+        penalty = self.move_hero(action)
+        reward, done = self.check_reward()
+        state = self.render()
+        #
+        return state, (reward+penalty), done, None
+    
+    def close(self):
+        pass
+    #
+    
+    #
     def map_to_pic(self, state):
         """
         """
@@ -112,15 +126,6 @@ class GridWorld(AbstractEnv):
         return points[location]
         
     #
-    def step(self, action):
-        """
-        """
-        penalty = self.move_hero(action)
-        reward, done = self.check_reward()
-        state = self.render()
-        #
-        return state, (reward+penalty), done, None
-        
     def move_hero(self, direction):
         """
         """
@@ -164,7 +169,6 @@ class GridWorld(AbstractEnv):
             return 0.0, False
         #
 
-    def close(self):
-        pass
+    
 
 #

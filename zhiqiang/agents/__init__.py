@@ -19,13 +19,6 @@ class AbstractAgent(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def eval(self, env, observation=None):
-        """
-        """
-        pass
-
-    #
-    @abstractmethod
     def generate(self, env, observation=None):
         """ generate experience, (s, a, r, s', info)
             return: list_experience
@@ -40,6 +33,41 @@ class AbstractAgent(metaclass=ABCMeta):
         """
         pass
 
+    #
+    def rollout(self, env, observation=None):
+        """
+        """
+        rewards = 0
+        list_transitions = []
+        #
+        if observation is None:
+            observation = env.reset()
+        #
+        done = False
+        while not done:
+            action = self.act(observation)
+            sp, reward, done, info = env.step(action)
+            exp = (observation, action, reward, sp, info)
+            observation = sp
+            #
+            rewards += reward
+            list_transitions.append(exp)
+            #
+        #
+        return rewards, list_transitions
+        #
+
+    def eval(self, num_rollout, env, observation=None):
+        """
+        """
+        aver_rewards = 0
+        for idx in range(num_rollout):
+            rewards, transitions = self.rollout(env)
+            aver_rewards += rewards
+        #
+        return aver_rewards / num_rollout
+        #
+
 #
 class AbstractQNet(metaclass=ABCMeta):
     """
@@ -50,8 +78,8 @@ class AbstractQNet(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def trans_list_observation(self, list_observation):
-        """ trans list_observation to batch_std for model
+    def trans_list_observations(self, list_observations):
+        """ trans list_observations to batch_std for model
             return: batch_std, dict
         """
         pass
@@ -63,13 +91,13 @@ class AbstractQNet(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def backward(self, loss):
+    def back_propagate(self, loss):
         """
         """
         pass
 
     @abstractmethod
-    def merge_weights(self, another_qnet, merge_alpha):
+    def merge_weights(self, another_qnet, merge_ksi):
         """
         """
         pass
