@@ -26,20 +26,23 @@ class SimpleTrainer():
         list_aver_rewards = []
         #
         for idx_boost in range(num_boost):
+            # generate experience
+            self.agent.prepare_evaluating()     # eval mode
+            for idx_gen in range(num_gen):
+                list_experience = self.agent.generate(self.env)
+                self.buffer.add(list_experience)
             # eval
             if idx_boost % eval_period == 0:
                 aver_rewards = self.agent.eval(num_eval_rollout, self.env)
                 list_aver_rewards.append(aver_rewards)
-            # generate experience
-            for idx_gen in range(num_gen):
-                list_experience = self.agent.generate(self.env)
-                self.buffer.add(list_experience)
             # optimize
+            self.agent.prepare_training()       # train mode
             for idx_optim in range(num_optim):
                 batch_data = self.buffer.sample(batch_size)
                 self.agent.optimize(batch_data, self.buffer)
         #
         # final eval
+        self.agent.prepare_evaluating()         # eval mode
         aver_rewards = self.agent.eval(num_eval_rollout, self.env)
         list_aver_rewards.append(aver_rewards)    
         #

@@ -92,4 +92,12 @@ class VanilaDQN(AbstractAgent):
         self.qnet_target.merge_weights(self.qnet_action, self.merge_ksi)
         #
 
+    #
+    def prepare_training(self):
+        self.qnet_action.prepare_training()
+
+    def prepare_evaluating(self):
+        self.qnet_action.prepare_evaluating()
+    #
+
 

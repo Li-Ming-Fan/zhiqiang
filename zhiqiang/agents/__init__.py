@@ -34,6 +34,19 @@ class AbstractAgent(metaclass=ABCMeta):
         pass
 
     #
+    @abstractmethod
+    def prepare_training(self):
+        """
+        """
+        pass
+
+    @abstractmethod
+    def prepare_evaluating(self):
+        """
+        """
+        pass
+
+    #
     def rollout(self, env, observation=None):
         """
         """
@@ -69,7 +82,7 @@ class AbstractAgent(metaclass=ABCMeta):
         #
 
 #
-class AbstractQNet(metaclass=ABCMeta):
+class AbstractPQNet(metaclass=ABCMeta):
     """
     """
     def __init__(self):
@@ -86,7 +99,20 @@ class AbstractQNet(metaclass=ABCMeta):
 
     @abstractmethod
     def infer(self, batch_std):
-        """ return: action values, numpy.array
+        """ return: action_values / policy
+        """
+        pass
+
+    #
+    @abstractmethod
+    def prepare_training(self):
+        """
+        """
+        pass
+
+    @abstractmethod
+    def prepare_evaluating(self):
+        """
         """
         pass
 
@@ -97,19 +123,8 @@ class AbstractQNet(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def merge_weights(self, another_qnet, merge_ksi):
+    def merge_weights(self, another_net, merge_ksi):
         """
         """
         pass
-
-#
-class AbstractPNet(metaclass=ABCMeta):
-    """
-    """
-    def __init__(self):
-        """
-        """
-        pass
-
-    
 

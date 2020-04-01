@@ -1,60 +1,88 @@
 
+import numpy as np
 
-from zhiqiang.agents import AbstractQNet
+import torch
+import torch.nn as nn
+
+from zhiqiang.utils import torch_utils
+from zhiqiang.agents import AbstractPQNet
 
 
-class GridWorldQNet(AbstractQNet):
+class GridWorldQNet(torch.nn.Module, AbstractPQNet):
     """
     """
     def __init__(self, agent_settings):
         """
         """
-        pass
+        super(GridWorldQNet, self).__init__()
+        self.agent_settings = agent_settings
+        #
+        self.num_actions = self.agent_settings["num_actions"]
+        num_features = 64
+        # 7*7 --> 6*6 --> 5*5 --> 3*3 --> 1*1
+        self.conv1 = nn.Conv2d(3, 32, 2)
+        self.conv2 = nn.Conv2d(32, 64, 2)
+        self.conv3 = nn.Conv2d(64, 64, 3)
+        self.conv4 = nn.Conv2d(64, num_features, 3)
+        self.linear = nn.Linear(num_features, self.num_actions)
+        #
+        # optimizer
+        params = [p for p in self.parameters() if p.requires_grad]
+        self.optimizer = torch.optim.Adam(params, lr=self.agent_settings["lr"],
+                                          weight_decay=self.agent_settings["l2reg"])
+        #
+        self.reset()
+        #
 
     def trans_list_observations(self, list_observation):
         """ trans list_observation to batch_std for model
             return: batch_std, dict
         """
-        pass
+        obs_np = np.stack(list_observation, axis=0)
+        obs_tensor = torch.Tensor(obs_np)
+        return obs_tensor
 
-    def infer(self, observation):
+    def infer(self, batch_std):
         """
         """
+        batch_permute = batch_std.permute(0, 3, 1, 2)    # [B, C, H, W]
+        c1 = self.conv1(batch_permute)
+        c2 = self.conv2(c1)
+        c3 = self.conv3(c2)
+        c4 = self.conv4(c3)                       # [B, C, 1, 1]
+        features = c4.squeeze(-1).squeeze(-1)
+        action_values = self.linear(features)     # [B, NA]
+        return action_values
+
+    #
+    def prepare_training(self):
         """
-        #The network recieves a frame from the game, flattened into an array.
-        #It then resizes it and processes it through four convolutional layers.
-        self.sizeInput = world.state.size
-        self.scalarInput = tf.placeholder(shape = [None, world.state.size],\
-                                          dtype = tf.float32)
-        #
-        # feature extraction
-        s = world.state.shape;
-        shape = [-1, s[0], s[1], s[2]];
-        self.imageIn = tf.reshape(self.scalarInput,shape=shape)
-        # 7*7 --> 6*6 --> 5*5 --> 3*3 --> 1*1
-        self.conv1 = slim.conv2d( \
-            inputs=self.imageIn,num_outputs=32,\
-            kernel_size=[2,2], stride=[1,1], padding='VALID',biases_initializer=None)
-        self.conv2 = slim.conv2d( \
-            inputs=self.conv1,num_outputs=64,\
-            kernel_size=[2,2], stride=[1,1], padding='VALID',biases_initializer=None)
-        self.conv3 = slim.conv2d( \
-            inputs=self.conv2,num_outputs=64,\
-            kernel_size=[3,3], stride=[1,1], padding='VALID',biases_initializer=None)
-        self.conv4 = slim.conv2d( \
-            inputs=self.conv3,num_outputs=n_feat,\
-            kernel_size=[3,3], stride=[1,1], padding='VALID',biases_initializer=None)
-        #
         """
+        self.train()
+        self.optimizer.zero_grad()
+
+    def prepare_evaluating(self):
+        """
+        """
+        self.eval()
 
     def back_propagate(self, loss):
         """
         """
-        pass
+        loss.backward(retain_graph=False)
+        self.optimizer.step()
 
     def merge_weights(self, another_qnet, merge_ksi):
         """
         """
-        pass
+        torch_utils.merge_weights(self, another_qnet, merge_ksi)
+
+    def reset(self, seed=100):
+        """
+        """
+        torch_utils.set_random_seed(seed)
+        torch_utils.reset_params(self)
+        torch_utils.print_params(self)
+        #
 
 

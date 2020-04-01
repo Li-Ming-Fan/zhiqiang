@@ -2,7 +2,7 @@
 
 zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthening.
 
-A package for reinforcement learning algorithms. PyTorch / Tensorflow / Others.
+A package for reinforcement learning algorithms. PyTorch.
 
 
 ## Description
@@ -36,7 +36,7 @@ For a quick trial, try the codes in the file examples/GridWorld/script_train_sim
 # define an env
 from grid_world import GridWorld as Env
 #
-# define a qnet, in PyTorch or Tensorflow or others
+# define a qnet, in PyTorch
 from gw_qnet import GridWorldQNet as QNet
 #
 # pick an agent
