@@ -30,7 +30,7 @@ class SimpleBuffer(AbstractBuffer):
         """ return: dict
         """
         len_buffer = len(self.buffer_list)
-        posi = np.random.sample(list(range(len_buffer)), size)
+        posi = np.random.choice(list(range(len_buffer)), size)
         #
         data = [self.buffer_list[idx] for idx in posi]
         #

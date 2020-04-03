@@ -4,6 +4,8 @@ from zhiqiang.agents import AbstractAgent
 
 import numpy as np
 
+import torch
+
 
 class VanilaDQN(AbstractAgent):
     """
@@ -19,7 +21,7 @@ class VanilaDQN(AbstractAgent):
         self.policy_greedy = self.settings.agent_settings["policy_greedy"]
         self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
         self.num_actions = self.settings.agent_settings["num_actions"]
-        self.gamma = self.settings.agent_settings["gamma"]
+        self.gamma = torch.tensor(self.settings.agent_settings["gamma"])
         #
         self.max_step_gen = self.settings.agent_settings["max_step_gen"]
         #
@@ -32,38 +34,13 @@ class VanilaDQN(AbstractAgent):
         #
         action_values = inference[0]
         if self.policy_greedy or np.random.rand() > self.policy_epsilon:
-            return np.argmax(action_values)
+            return torch.argmax(action_values)
         else:
-            return np.random.randint(self.num_actions)
+            return torch.randint(0, self.num_actions, (1,))
         #
 
     #
-    def generate(self, env, observation=None):
-        """ generate experience, (s, a, r, s', info)
-        """
-        list_transitions = []
-        count = 0
-        #
-        if observation is None:
-            observation = env.reset()
-        #
-        done = False
-        while not done:
-            action = self.act(observation)
-            sp, reward, done, info = env.step(action)
-            exp = (observation, action, reward, sp, info)
-            observation = sp
-            #
-            list_transitions.append(exp)
-            count += 1
-            #
-            if count >= self.max_step_gen: break
-            #
-        #
-        return list_transitions
-
-    #
-    def optimize(self, batch_data):
+    def optimize(self, batch_data, buffer):
         """ optimization step
             batch_data["data"]: list of (s, a, r, s', info)
         """
@@ -79,16 +56,16 @@ class VanilaDQN(AbstractAgent):
         p_av = self.qnet_target.infer(p_std)   # [B, A]
         #
         # max value (action) at state s'
-        max_p_av = np.max(p_av, -1)
+        max_p_av = torch.max(p_av, -1)[0]
         #
         # target
-        target = np.array(list_r) + self.gamma * max_p_av
+        target = torch.tensor(list_r) + self.gamma * max_p_av
         #
         # loss
-        loss = target - np.array(s_exe_av)    # [B, ]
-        loss = np.mean(loss ** 2)
+        loss = target - torch.tensor(s_exe_av)    # [B, ]
+        loss = torch.mean(loss ** 2)
         #
-        self.qnet_action.back_propagte(loss)
+        self.qnet_action.back_propagate(loss)
         self.qnet_target.merge_weights(self.qnet_action, self.merge_ksi)
         #
 

@@ -19,13 +19,6 @@ class AbstractAgent(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def generate(self, env, observation=None):
-        """ generate experience, (s, a, r, s', info)
-            return: list_experience
-        """
-        pass
-
-    @abstractmethod
     def optimize(self, batch_data, buffer=None):
         """ optimization step
             batch_data: dict, {"data": data, "position": posi}
@@ -47,35 +40,36 @@ class AbstractAgent(metaclass=ABCMeta):
         pass
 
     #
-    def rollout(self, env, observation=None):
+    def rollout(self, max_step, env, observation=None):
         """
         """
         rewards = 0
-        list_transitions = []
+        list_experience = []
         #
         if observation is None:
             observation = env.reset()
         #
-        done = False
-        while not done:
+        for step in range(max_step):
             action = self.act(observation)
             sp, reward, done, info = env.step(action)
             exp = (observation, action, reward, sp, info)
             observation = sp
             #
             rewards += reward
-            list_transitions.append(exp)
+            list_experience.append(exp)
+            #
+            if done: break
             #
         #
-        return rewards, list_transitions
+        return rewards, list_experience
         #
 
-    def eval(self, num_rollout, env, observation=None):
+    def eval(self, num_rollout, max_step, env, observation=None):
         """
         """
         aver_rewards = 0
         for idx in range(num_rollout):
-            rewards, transitions = self.rollout(env)
+            rewards, list_experience = self.rollout(max_step, env)
             aver_rewards += rewards
         #
         return aver_rewards / num_rollout

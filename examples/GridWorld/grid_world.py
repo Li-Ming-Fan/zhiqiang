@@ -161,9 +161,9 @@ class GridWorld(AbstractEnv):
             if hero.x == other.x and hero.y == other.y:
                 self.objects.remove(other)
                 if other.reward == 1:
-                    self.objects.append(GameItem(self.get_new_posi(),1,1,1,1,'food'))
+                    self.objects.append(GridItem(self.get_new_posi(),1,1,1,1,'food'))
                 else: 
-                    self.objects.append(GameItem(self.get_new_posi(),1,1,0,-1,'fire'))
+                    self.objects.append(GridItem(self.get_new_posi(),1,1,0,-1,'fire'))
                 return other.reward, False
         else:
             return 0.0, False
