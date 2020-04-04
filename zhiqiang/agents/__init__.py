@@ -42,6 +42,12 @@ class AbstractAgent(metaclass=ABCMeta):
             buffer: replay_buffer, for possible update
         """
         pass
+    
+    @abstractmethod
+    def update_base_net(self):
+        """
+        """
+        pass
     #
 
     #

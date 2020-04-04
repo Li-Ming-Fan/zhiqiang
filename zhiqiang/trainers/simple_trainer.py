@@ -24,25 +24,22 @@ class SimpleTrainer():
         eval_period = self.settings.trainer_settings["eval_period"]
         num_eval_rollout = self.settings.trainer_settings["num_eval_rollout"]
         max_step = self.settings.trainer_settings["max_roll_step"]
+        #
+        max_aver_rewards = self.settings.trainer_settings["base_rewards"]
         list_aver_rewards = []
         #
         for idx_boost in range(num_boost):
+            #
+            str_info = "-" * 70
+            print(str_info)
+            self.settings.logger.info(str_info)
             #
             str_info = "curr_boost: %d" % idx_boost
             print(str_info)
             self.settings.logger.info(str_info)
             #
-            # generate experience
-            str_info = "generating experience ..."
-            print(str_info)
-            self.settings.logger.info(str_info)
-            #
-            self.agent.eval_mode()                   # eval mode
-            for idx_gen in range(num_gen):
-                experience = self.agent.generate(max_step, self.env)
-                self.buffer.add(experience)
-            #
             # eval
+            self.agent.eval_mode()                   # eval mode
             if idx_boost % eval_period == 0:
                 str_info = "evaluating ..."
                 print(str_info)
@@ -55,6 +52,25 @@ class SimpleTrainer():
                 print(str_info)
                 self.settings.logger.info(str_info)
                 #
+                if aver_rewards >= max_aver_rewards:
+                    str_info = "max_aver_rewards: %f --> %f" % (
+                        max_aver_rewards, aver_rewards)
+                    print(str_info)
+                    self.settings.logger.info(str_info)
+                    # update
+                    max_aver_rewards = aver_rewards
+                    self.agent.update_base_net()
+                    #
+                #
+            #
+            # generate experience
+            str_info = "generating experience ..."
+            print(str_info)
+            self.settings.logger.info(str_info)
+            #
+            for idx_gen in range(num_gen):
+                experience = self.agent.generate(max_step, self.env)
+                self.buffer.add(experience)
             #
             # optimize
             str_info = "optimizing ..."
@@ -68,6 +84,7 @@ class SimpleTrainer():
                 batch_std = self.agent.standardize_batch(batch_data)
                 # optimize
                 self.agent.optimize(batch_std, self.buffer)
+                #
             #
         #
         # final eval
