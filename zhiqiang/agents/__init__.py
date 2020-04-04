@@ -135,14 +135,12 @@ class AbstractPQNet(metaclass=ABCMeta):
 
     def train_mode(self):
         self.train()
-
-    def zero_grad(self):
-        self.optimizer.zero_grad()
         
     def back_propagate(self, loss):
+        self.optimizer.zero_grad()       
         loss.backward(retain_graph=False)
         self.optimizer.step()
-    #
+
     def merge_weights_function(self):
         return torch_utils.merge_weights
     #

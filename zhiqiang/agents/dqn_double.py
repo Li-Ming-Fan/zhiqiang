@@ -15,23 +15,26 @@ class DoubleDQN(AbstractAgent):
         """
         self.settings = settings
         self.qnet_action = qnet_class(self.settings.agent_settings)
-        self.qnet_target = qnet_class(self.settings.agent_settings)
-        self.merge_ksi = self.settings.agent_settings["merge_ksi"]
+        self.qnet_target = qnet_class(self.settings.agent_settings)        
         #
         self.policy_greedy = self.settings.agent_settings["policy_greedy"]
         self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
+        self.policy_greedy_bak = self.policy_greedy
+        self.policy_epsilon_bak = self.policy_epsilon
+        #
         self.num_actions = self.settings.agent_settings["num_actions"]
         self.gamma = torch.tensor(self.settings.agent_settings["gamma"])
         #
-        self.max_step_gen = self.settings.agent_settings["max_step_gen"]
+        self.update_base_net(1.0)
+        self.qnet_target.eval_mode()
         #
     
     #
     def act(self, observation):
         """
         """
-        batch_std = self.qnet_action.trans_list_observations([observation])
-        inference = self.qnet_action.infer(batch_std)
+        s_std = self.qnet_action.trans_list_observations([observation])
+        inference = self.qnet_action.infer(s_std)
         #
         action_values = inference[0]
         if self.policy_greedy or np.random.rand() > self.policy_epsilon:
@@ -40,48 +43,89 @@ class DoubleDQN(AbstractAgent):
             return torch.randint(0, self.num_actions, (1,))[0]
         #
 
+    def generate(self, base_rewards, max_step_gen, env, observation=None):
+        """ return: list_experiences, (s, a, r, s', info)
+        """
+        sum_rewards, list_experiences = self.rollout(max_step_gen, env, observation)
+        if sum_rewards > base_rewards:
+            return list_experiences
+        else:
+            return []
+        #
+
     #
-    def optimize(self, batch_data, buffer):
-        """ optimization step
-            batch_data["data"]: list of (s, a, r, s', info)
+    def standardize_batch(self, batch_data):
+        """ batch_data["data"]: list of (s, a, r, s', info)
         """
         list_s, list_a, list_r, list_p, list_info = list(zip(*batch_data["data"]))
         #
-        # s
         s_std = self.qnet_action.trans_list_observations(list_s)
+        #
+        batch_std = {}
+        batch_std["s_std"] = s_std
+        batch_std["a"] = torch.tensor(list_a)
+        batch_std["r"] = torch.tensor(list_r)
+        #
+        p_std = self.qnet_action.trans_list_observations(list_p)
+        batch_std["p_std"] = p_std
+        #
+        return batch_std
+        #
+
+    def optimize(self, batch_std, buffer):
+        """ optimization step
+            batch_data["data"]: list of (s, a, r, s', info)
+        """
+        # s
+        s_std = batch_std["s_std"]
         s_av = self.qnet_action.infer(s_std)
-        indices = torch.LongTensor(list_a).unsqueeze(-1)
+        indices = batch_std["a"].long().unsqueeze(-1)
         s_exe_av = torch.gather(s_av, 1, indices)
         #
         # s'
-        p_std = self.qnet_action.trans_list_observations(list_p)
+        p_std = batch_std["p_std"]
         #
         # decoupled
         p_av_action = self.qnet_action.infer(p_std)        # [B, A]
         p_action = torch.argmax(p_av_action, -1)           # [B, ]
         #
         p_av_target = self.qnet_target.infer(p_std)        # [B, A]
-        indices = torch.LongTensor(p_action).unsqueeze(-1)
+        #
+        indices = p_action.long().unsqueeze(-1)
         p_exe_av = torch.gather(p_av_target, 1, indices)
         #
         # target
-        target = torch.tensor(list_r) + self.gamma * p_exe_av
+        target = batch_std["r"] + self.gamma * p_exe_av
         target = target.detach()
         #
         # loss
-        loss = target - s_exe_av    # [B, ]
+        loss = target - s_exe_av.squeeze(-1)       # [B, ]        
         loss = torch.mean(loss ** 2)
         #
         self.qnet_action.back_propagate(loss)
-        self.qnet_target.merge_weights(self.qnet_action, self.merge_ksi)
         #
 
+    def update_base_net(self, merge_ksi):
+        """
+        """
+        merge_function = self.qnet_target.merge_weights_function()
+        merge_function(self.qnet_target, self.qnet_action, merge_ksi)
+        #
+        
     #
-    def prepare_training(self):
-        self.qnet_action.prepare_training()
+    def train_mode(self):
+        self.qnet_action.train_mode()
+        self.policy_greedy = self.policy_greedy_bak
+        self.policy_epsilon = self.policy_epsilon_bak
 
-    def prepare_evaluating(self):
-        self.qnet_action.prepare_evaluating()
+    def eval_mode(self):
+        self.qnet_action.eval_mode()
+        self.policy_greedy = 0
+
+    def explore_mode(self):
+        self.qnet_action.eval_mode()
+        self.policy_greedy = 0
+        self.policy_epsilon = self.policy_epsilon_bak
     #
 
 

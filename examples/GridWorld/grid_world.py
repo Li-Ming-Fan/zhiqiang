@@ -101,12 +101,20 @@ class GridWorld(AbstractEnv):
         #        
         return pic
 
-    def display(self):
+    def display(self, figure_handle=None):
         """
         """
-        plt.figure()
+        if figure_handle is not None:
+            plt.close(figure_handle)
+        else:
+            figure_handle = 0
+        #
+        figure_handle_new = figure_handle + 1
+        figure = plt.figure(figure_handle_new)
         plt.imshow(self.map_to_pic(self.state), interpolation="nearest")
         plt.show()
+        #
+        return figure_handle_new
         #
     
     def get_new_posi(self):

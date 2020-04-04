@@ -94,14 +94,8 @@ class VanilaDQN(AbstractAgent):
         target = target.detach()
         #
         # loss
-        loss = target - s_exe_av.squeeze(-1)       # [B, ]
-
-        # print(max_p_av)
-        
+        loss = target - s_exe_av.squeeze(-1)       # [B, ]        
         loss = torch.mean(loss ** 2)
-
-        # print(loss)
-        # print("-" * 50)
         #
         self.qnet_action.back_propagate(loss)
         #

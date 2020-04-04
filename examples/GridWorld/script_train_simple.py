@@ -3,7 +3,7 @@
 # define an env
 from grid_world import GridWorld as Env
 #
-# define a qnet, in PyTorch or Tensorflow or others
+# define a qnet, in PyTorch
 from gridworld_qnet import GridWorldQNet as QNet
 #
 # pick an agent

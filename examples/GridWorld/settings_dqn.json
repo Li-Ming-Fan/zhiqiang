@@ -15,17 +15,17 @@
         "partial": 0
     },
     "buffer_settings": {
-        "buffer_size": 10000
+        "buffer_size": 5000
     },
     "trainer_settings": {
-        "num_boost": 100000,
-        "num_gen": 1000,
+        "num_boost": 1000,
+        "num_gen": 50,
         "num_optim": 1000,
         "merge_ksi": 1.0,
         "base_rewards": 0.0,
         "batch_size": 32,
         "eval_period": 1,
         "num_eval_rollout": 100,
-        "max_roll_step": 100
+        "max_roll_step": 50
     }
 }
