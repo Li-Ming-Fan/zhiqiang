@@ -25,6 +25,7 @@ class SimpleTrainer():
         num_eval_rollout = self.settings.trainer_settings["num_eval_rollout"]
         max_step = self.settings.trainer_settings["max_roll_step"]
         #
+        merge_ksi = self.settings.trainer_settings["merge_ksi"]
         max_aver_rewards = self.settings.trainer_settings["base_rewards"]
         list_aver_rewards = []
         #
@@ -48,18 +49,19 @@ class SimpleTrainer():
                 aver_rewards = self.agent.eval(num_eval_rollout, max_step, self.env)
                 list_aver_rewards.append(aver_rewards)
                 #
-                str_info = "aver_rewards: %f" % aver_rewards
+                str_info = "max_aver_rewards, aver_rewards: %f, %f" % (
+                    max_aver_rewards, aver_rewards)
                 print(str_info)
                 self.settings.logger.info(str_info)
                 #
                 if aver_rewards >= max_aver_rewards:
-                    str_info = "max_aver_rewards: %f --> %f" % (
+                    str_info = "new max_aver_rewards: %f --> %f" % (
                         max_aver_rewards, aver_rewards)
                     print(str_info)
                     self.settings.logger.info(str_info)
                     # update
                     max_aver_rewards = aver_rewards
-                    self.agent.update_base_net()
+                    self.agent.update_base_net(merge_ksi)
                     #
                 #
             #
@@ -68,8 +70,9 @@ class SimpleTrainer():
             print(str_info)
             self.settings.logger.info(str_info)
             #
+            self.agent.explore_mode()                # explore mode
             for idx_gen in range(num_gen):
-                experience = self.agent.generate(max_step, self.env)
+                experience = self.agent.generate(max_aver_rewards, max_step, self.env)
                 self.buffer.add(experience)
             #
             # optimize

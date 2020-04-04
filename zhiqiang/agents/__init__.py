@@ -22,7 +22,7 @@ class AbstractAgent(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def generate(self, max_gen_step, env, observation=None):
+    def generate(self, base_rewards, max_gen_step, env, observation=None):
         """ return list_experiences
         """
         pass
@@ -59,6 +59,12 @@ class AbstractAgent(metaclass=ABCMeta):
 
     @abstractmethod
     def eval_mode(self):
+        """
+        """
+        pass
+
+    @abstractmethod
+    def explore_mode(self):
         """
         """
         pass

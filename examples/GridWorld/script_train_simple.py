@@ -17,7 +17,7 @@ from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
 from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
 #
 # settings file
-settings_filepath = "./examples/GridWorld/settings_dqn_vanila.json"
+settings_filepath = "./examples/GridWorld/settings_dqn.json"
 #
 
 # The following is a common routine.

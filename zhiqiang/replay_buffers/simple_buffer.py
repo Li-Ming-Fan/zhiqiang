@@ -13,6 +13,16 @@ class SimpleBuffer(AbstractBuffer):
         """
         self.buffer_size = settings.buffer_settings["buffer_size"]
         self.buffer_list = []
+        #
+        self.len_buffer = 0
+        self.position_list = []
+        #
+
+    def _make_ready(self):
+        """
+        """
+        self.len_buffer = len(self.buffer_list)        
+        self.position_list = list(range(self.len_buffer))
     
     def add(self, list_experiences):
         """
@@ -25,12 +35,13 @@ class SimpleBuffer(AbstractBuffer):
         #
         self.buffer_list.extend(list_experiences)
         #
+        self._make_ready()
+        #
             
-    def sample(self, size):
+    def sample(self, size, replace=False):
         """ return: dict
         """
-        len_buffer = len(self.buffer_list)
-        posi = np.random.choice(list(range(len_buffer)), size)
+        posi = np.random.choice(self.position_list, size, replace=replace)
         #
         data = [self.buffer_list[idx] for idx in posi]
         #

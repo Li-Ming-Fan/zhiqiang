@@ -49,8 +49,8 @@ class PriorityBuffer(AbstractBuffer):
     def sample(self, size, replace=False):
         """ return: dict
         """
-        posi = np.random.choice(self.position_list, size,
-                                replace=replace, p=self.probablity_list)
+        posi = np.random.choice(self.position_list, size, replace=replace,
+                                p=self.probablity_list)
         #
         dp = [(self.buffer_list[idx], self.priority_list[idx]) for idx in posi]
         data, prio = list(zip(*dp))

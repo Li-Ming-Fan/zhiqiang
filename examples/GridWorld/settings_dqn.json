@@ -1,12 +1,11 @@
 {
     "agent_settings": {
-        "name": "VanilaDQN",
-        "merge_ksi": 1.0,
+        "name": "VanilaDQN",        
         "policy_greedy": 0,
-        "policy_epsilon": 0.1,
+        "policy_epsilon": 0.4,
         "num_actions": 4,
         "gamma": 0.99,
-        "max_step_gen": 100,
+        "optimizer_type": "adam",
         "lr": 0.001,
         "l2reg": 0.00001
     },
@@ -20,8 +19,9 @@
     },
     "trainer_settings": {
         "num_boost": 100000,
-        "num_gen": 100,
+        "num_gen": 1000,
         "num_optim": 1000,
+        "merge_ksi": 1.0,
         "base_rewards": 0.0,
         "batch_size": 32,
         "eval_period": 1,

@@ -15,16 +15,17 @@ class VanilaDQN(AbstractAgent):
         """
         self.settings = settings
         self.qnet_action = qnet_class(self.settings.agent_settings)
-        self.qnet_target = qnet_class(self.settings.agent_settings)
-        self.merge_ksi = self.settings.agent_settings["merge_ksi"]
+        self.qnet_target = qnet_class(self.settings.agent_settings)        
         #
         self.policy_greedy = self.settings.agent_settings["policy_greedy"]
         self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
+        self.policy_greedy_bak = self.policy_greedy
+        self.policy_epsilon_bak = self.policy_epsilon
+        #
         self.num_actions = self.settings.agent_settings["num_actions"]
         self.gamma = torch.tensor(self.settings.agent_settings["gamma"])
         #
-        self.max_step_gen = self.settings.agent_settings["max_step_gen"]
-        #
+        self.update_base_net(1.0)
         self.qnet_target.eval_mode()
         #
     
@@ -42,11 +43,15 @@ class VanilaDQN(AbstractAgent):
             return torch.randint(0, self.num_actions, (1,))[0]
         #
 
-    def generate(self, max_step_gen, env, observation=None):
+    def generate(self, base_rewards, max_step_gen, env, observation=None):
         """ return: list_experiences, (s, a, r, s', info)
         """
         sum_rewards, list_experiences = self.rollout(max_step_gen, env, observation)
-        return list_experiences
+        if sum_rewards > base_rewards:
+            return list_experiences
+        else:
+            return []
+        #
 
     #
     def standardize_batch(self, batch_data):
@@ -101,19 +106,27 @@ class VanilaDQN(AbstractAgent):
         self.qnet_action.back_propagate(loss)
         #
 
-    def update_base_net(self):
+    def update_base_net(self, merge_ksi):
         """
         """
         merge_function = self.qnet_target.merge_weights_function()
-        merge_function(self.qnet_target, self.qnet_action, self.merge_ksi)
+        merge_function(self.qnet_target, self.qnet_action, merge_ksi)
         #
         
     #
     def train_mode(self):
         self.qnet_action.train_mode()
+        self.policy_greedy = self.policy_greedy_bak
+        self.policy_epsilon = self.policy_epsilon_bak
 
     def eval_mode(self):
         self.qnet_action.eval_mode()
+        self.policy_greedy = 0
+
+    def explore_mode(self):
+        self.qnet_action.eval_mode()
+        self.policy_greedy = 0
+        self.policy_epsilon = self.policy_epsilon_bak
     #
 
 
