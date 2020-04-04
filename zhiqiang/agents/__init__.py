@@ -38,6 +38,7 @@ class AbstractAgent(metaclass=ABCMeta):
         """
         """
         pass
+    #
 
     #
     def rollout(self, max_step, env, observation=None):
@@ -74,6 +75,7 @@ class AbstractAgent(metaclass=ABCMeta):
         #
         return aver_rewards / num_rollout
         #
+    #
 
 #
 class AbstractPQNet(metaclass=ABCMeta):
@@ -99,17 +101,17 @@ class AbstractPQNet(metaclass=ABCMeta):
 
     #
     @abstractmethod
-    def prepare_training(self):
-        """
-        """
-        pass
-
-    @abstractmethod
     def prepare_evaluating(self):
         """
         """
         pass
 
+    @abstractmethod
+    def prepare_training(self):
+        """
+        """
+        pass
+    
     @abstractmethod
     def back_propagate(self, loss):
         """

@@ -16,3 +16,17 @@ num_sample = 3
 a = np.random.choice(list_a, 3, replace=False, p=list_p)
 print(a)
 
+
+import torch
+num_actions = 4
+
+a = torch.randint(0, num_actions, (1,))
+print(a)
+
+b = torch.Tensor([[1,2,3],[4,5,6]])
+print(b)
+index_1 = torch.LongTensor([[0,1],[2,0]])
+index_2 = torch.LongTensor([[0,1,1],[0,0,0]])
+print(torch.gather(b, dim=1, index=index_1))
+print(torch.gather(b, dim=0, index=index_2))
+

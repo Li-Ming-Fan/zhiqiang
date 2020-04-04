@@ -25,7 +25,8 @@ class VanilaDQN(AbstractAgent):
         #
         self.max_step_gen = self.settings.agent_settings["max_step_gen"]
         #
-
+    
+    #
     def act(self, observation):
         """
         """
@@ -36,7 +37,7 @@ class VanilaDQN(AbstractAgent):
         if self.policy_greedy or np.random.rand() > self.policy_epsilon:
             return torch.argmax(action_values)
         else:
-            return torch.randint(0, self.num_actions, (1,))
+            return torch.randint(0, self.num_actions, (1,))[0]
         #
 
     #
@@ -49,7 +50,8 @@ class VanilaDQN(AbstractAgent):
         # s
         s_std = self.qnet_action.trans_list_observations(list_s)
         s_av = self.qnet_action.infer(s_std)
-        s_exe_av = [s_av[idx][a] for idx, a in enumerate(list_a)]
+        indices = torch.LongTensor(list_a).unsqueeze(-1)
+        s_exe_av = torch.gather(s_av, 1, indices)
         #
         # s'
         p_std = self.qnet_action.trans_list_observations(list_p)
@@ -60,9 +62,10 @@ class VanilaDQN(AbstractAgent):
         #
         # target
         target = torch.tensor(list_r) + self.gamma * max_p_av
+        target = target.detach()
         #
         # loss
-        loss = target - torch.tensor(s_exe_av)    # [B, ]
+        loss = target - s_exe_av    # [B, ]
         loss = torch.mean(loss ** 2)
         #
         self.qnet_action.back_propagate(loss)

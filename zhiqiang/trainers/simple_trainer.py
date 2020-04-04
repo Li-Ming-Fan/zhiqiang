@@ -75,7 +75,11 @@ class SimpleTrainer():
         #
         self.agent.prepare_evaluating()         # eval mode
         aver_rewards = self.agent.eval(num_eval_rollout, self.env)
-        list_aver_rewards.append(aver_rewards)    
+        list_aver_rewards.append(aver_rewards)
+        #
+        str_info = "aver_rewards: %f" % aver_rewards
+        print(str_info)
+        self.settings.logger.info(str_info)
         #
         str_info = "finished"
         print(str_info)

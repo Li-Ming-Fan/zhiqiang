@@ -71,4 +71,69 @@ def set_random_seed(seed):
 def merge_weights(model_a, model_b, merge_ksi):
     """
     """
-    pass
+    params_b = {}
+    for name, param in model_b.named_parameters():
+        # if param.requires_grad:
+        params_b[name] = param.data.clone()
+
+    #
+    merge_ksi_comp = 1 - merge_ksi
+    #
+    param_dict_a = {}
+    for name, param in model_a.named_parameters():
+        assert name in params_b, "name not exist in model_b"
+        p_merged = merge_ksi_comp * param.data + merge_ksi * params_b[name]
+        param.data = p_merged
+    #
+
+#
+class ModelAverage():
+    """
+    """
+    def __init__(self, model, decay_ratio):
+        """
+        """
+        self.model = model
+        self.decay_ratio = decay_ratio
+        self.merge_ratio = 1 - decay_ratio
+        self.averaged = {}
+        self.backup = {}
+
+    def initialize_averaged(self):
+        """
+        """
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                self.averaged[name] = param.data.clone()
+
+    def update_averaged(self):
+        """
+        """
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                assert name in self.averaged, "not exist in self.averaged"
+                p = self.merge_ratio * param.data + self.decay_ratio * self.averaged[name]
+                self.averaged[name] = p.clone()
+    
+    def apply_averaged(self):
+        """
+        """
+        self.backup = {}
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                assert name in self.averaged, "not exist in self.averaged"
+                self.backup[name] = param.data
+                param.data = self.averaged[name]
+    
+    def restore_backup(self):
+        """
+        """
+        for name, param in self.model.named_parameters():
+            if param.requires_grad:
+                assert name in self.backup, "not exist in self.backup"
+                param.data = self.backup[name]
+        #
+        self.backup = {}
+        #
+
+#

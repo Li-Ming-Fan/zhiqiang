@@ -1,14 +1,14 @@
 {
     "agent_settings": {
         "name": "VanilaDQN",
-        "merge_ksi": 0.5,
+        "merge_ksi": 0.9,
         "policy_greedy": 0,
         "policy_epsilon": 0.1,
         "num_actions": 4,
         "gamma": 0.99,
         "max_step_gen": 100,
-        "lr": 0.01,
-        "l2reg": 0.0001
+        "lr": 0.001,
+        "l2reg": 0.00001
     },
     "env_settings": {
         "name": "GridWorld",
@@ -16,14 +16,14 @@
         "partial": 0
     },
     "buffer_settings": {
-        "buffer_size": 5000
+        "buffer_size": 7000
     },
     "trainer_settings": {
-        "num_boost": 1000,
-        "num_gen": 100,
-        "num_optim": 100,
+        "num_boost": 100000,
+        "num_gen": 50,
+        "num_optim": 1000,
         "batch_size": 32,
-        "eval_period": 5,
+        "eval_period": 10,
         "num_eval_rollout": 10,
         "max_roll_step": 100
     }

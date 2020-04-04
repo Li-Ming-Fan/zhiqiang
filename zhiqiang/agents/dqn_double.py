@@ -4,6 +4,8 @@ from zhiqiang.agents import AbstractAgent
 
 import numpy as np
 
+import torch
+
 
 class DoubleDQN(AbstractAgent):
     """
@@ -19,11 +21,12 @@ class DoubleDQN(AbstractAgent):
         self.policy_greedy = self.settings.agent_settings["policy_greedy"]
         self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
         self.num_actions = self.settings.agent_settings["num_actions"]
-        self.gamma = self.settings.agent_settings["gamma"]
+        self.gamma = torch.tensor(self.settings.agent_settings["gamma"])
         #
         self.max_step_gen = self.settings.agent_settings["max_step_gen"]
         #
-
+    
+    #
     def act(self, observation):
         """
         """
@@ -32,38 +35,13 @@ class DoubleDQN(AbstractAgent):
         #
         action_values = inference[0]
         if self.policy_greedy or np.random.rand() > self.policy_epsilon:
-            return np.argmax(action_values)
+            return torch.argmax(action_values)
         else:
-            return np.random.randint(self.num_actions)
+            return torch.randint(0, self.num_actions, (1,))[0]
         #
 
     #
-    def generate(self, env, observation=None):
-        """ generate experience, (s, a, r, s', info)
-        """
-        list_transitions = []
-        count = 0
-        #
-        if observation is None:
-            observation = env.reset()
-        #
-        done = False
-        while not done:
-            action = self.act(observation)
-            sp, reward, done, info = env.step(action)
-            exp = (observation, action, reward, sp, info)
-            observation = sp
-            #
-            list_transitions.append(exp)
-            count += 1
-            #
-            if count >= self.max_step_gen: break
-            #
-        #
-        return list_transitions
-
-    #
-    def optimize(self, batch_data):
+    def optimize(self, batch_data, buffer):
         """ optimization step
             batch_data["data"]: list of (s, a, r, s', info)
         """
@@ -72,26 +50,29 @@ class DoubleDQN(AbstractAgent):
         # s
         s_std = self.qnet_action.trans_list_observations(list_s)
         s_av = self.qnet_action.infer(s_std)
-        s_exe_av = [s_av[idx][a] for idx, a in enumerate(list_a)]
+        indices = torch.LongTensor(list_a).unsqueeze(-1)
+        s_exe_av = torch.gather(s_av, 1, indices)
         #
         # s'
         p_std = self.qnet_action.trans_list_observations(list_p)
         #
         # decoupled
-        p_av_action = self.qnet_action.infer(p_std)     # [B, A]
-        p_action = np.argmax(p_av_action)               # [B, ]
+        p_av_action = self.qnet_action.infer(p_std)        # [B, A]
+        p_action = torch.argmax(p_av_action, -1)           # [B, ]
         #
-        p_av_target = self.qnet_target.infer(p_std)     # [B, A]
-        p_exe_av = [p_av_target[idx][a] for idx, a in enumerate(p_action)]
+        p_av_target = self.qnet_target.infer(p_std)        # [B, A]
+        indices = torch.LongTensor(p_action).unsqueeze(-1)
+        p_exe_av = torch.gather(p_av_target, 1, indices)
         #
         # target
-        target = np.array(list_r) + self.gamma * p_exe_av
+        target = torch.tensor(list_r) + self.gamma * p_exe_av
+        target = target.detach()
         #
         # loss
-        loss = target - np.array(s_exe_av)    # [B, ]
-        loss = np.mean(loss ** 2)
+        loss = target - s_exe_av    # [B, ]
+        loss = torch.mean(loss ** 2)
         #
-        self.qnet_action.back_propagte(loss)
+        self.qnet_action.back_propagate(loss)
         self.qnet_target.merge_weights(self.qnet_action, self.merge_ksi)
         #
 

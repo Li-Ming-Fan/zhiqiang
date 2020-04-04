@@ -4,10 +4,11 @@
 from grid_world import GridWorld as Env
 #
 # define a qnet, in PyTorch or Tensorflow or others
-from gw_qnet import GridWorldQNet as QNet
+from gridworld_qnet import GridWorldQNet as QNet
 #
 # pick an agent
 from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
+# from zhiqiang.agents.dqn_double import DoubleDQN as Agent
 #
 # pick a buffer
 from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer

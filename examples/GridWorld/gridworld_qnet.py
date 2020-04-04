@@ -55,17 +55,17 @@ class GridWorldQNet(torch.nn.Module, AbstractPQNet):
         return action_values
 
     #
-    def prepare_training(self):
-        """
-        """
-        self.train()
-        self.optimizer.zero_grad()
-
     def prepare_evaluating(self):
         """
         """
         self.eval()
 
+    def prepare_training(self):
+        """
+        """
+        self.train()
+        self.optimizer.zero_grad()
+        
     def back_propagate(self, loss):
         """
         """
