@@ -18,7 +18,7 @@
         "buffer_size": 5000
     },
     "trainer_settings": {
-        "num_boost": 100,
+        "num_boost": 10,
         "num_gen": 50,
         "num_optim": 1000,
         "merge_ksi": 1.0,
