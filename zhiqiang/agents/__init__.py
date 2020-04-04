@@ -2,6 +2,8 @@
 
 from abc import ABCMeta, abstractmethod
 
+from zhiqiang.utils import torch_utils
+
 #
 class AbstractAgent(metaclass=ABCMeta):
     """
@@ -11,6 +13,7 @@ class AbstractAgent(metaclass=ABCMeta):
         """
         pass
 
+    #
     @abstractmethod
     def act(self, observation):
         """ choose an action, based on observation
@@ -19,22 +22,37 @@ class AbstractAgent(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def optimize(self, batch_data, buffer=None):
-        """ optimization step
-            batch_data: dict, {"data": data, "position": posi}
-            buffer: replay_buffer, for possible update
+    def generate(self, max_gen_step, env, observation=None):
+        """ return list_experiences
         """
         pass
+    #
 
     #
     @abstractmethod
-    def prepare_training(self):
+    def standardize_batch(self, batch_data):
+        """ batch_data: dict, {"data": data, "position": posi}
+            return: batch_std
+        """
+        pass
+
+    @abstractmethod
+    def optimize(self, batch_std, buffer=None):
+        """ optimization step            
+            buffer: replay_buffer, for possible update
+        """
+        pass
+    #
+
+    #
+    @abstractmethod
+    def train_mode(self):
         """
         """
         pass
 
     @abstractmethod
-    def prepare_evaluating(self):
+    def eval_mode(self):
         """
         """
         pass
@@ -44,25 +62,25 @@ class AbstractAgent(metaclass=ABCMeta):
     def rollout(self, max_step, env, observation=None):
         """
         """
-        rewards = 0
-        list_experience = []
+        sum_rewards = 0
+        list_transitions = []
         #
         if observation is None:
             observation = env.reset()
         #
         for step in range(max_step):
             action = self.act(observation)
-            sp, reward, done, info = env.step(action)
-            exp = (observation, action, reward, sp, info)
+            sp, reward, done, info_env = env.step(action)
+            exp = (observation, action, reward, sp, {"info_env": info_env})
             observation = sp
             #
-            rewards += reward
-            list_experience.append(exp)
+            sum_rewards += reward
+            list_transitions.append(exp)
             #
             if done: break
             #
         #
-        return rewards, list_experience
+        return sum_rewards, list_transitions
         #
 
     def eval(self, num_rollout, max_step, env, observation=None):
@@ -70,7 +88,7 @@ class AbstractAgent(metaclass=ABCMeta):
         """
         aver_rewards = 0
         for idx in range(num_rollout):
-            rewards, list_experience = self.rollout(max_step, env)
+            rewards, list_transitions = self.rollout(max_step, env)
             aver_rewards += rewards
         #
         return aver_rewards / num_rollout
@@ -95,32 +113,27 @@ class AbstractPQNet(metaclass=ABCMeta):
 
     @abstractmethod
     def infer(self, batch_std):
-        """ return: action_values / policy
+        """ return: action_values, or policy
         """
         pass
 
     #
-    @abstractmethod
-    def prepare_evaluating(self):
-        """
-        """
-        pass
+    def eval_mode(self):
+        self.eval()
 
-    @abstractmethod
-    def prepare_training(self):
-        """
-        """
-        pass
-    
-    @abstractmethod
+    def train_mode(self):
+        self.train()
+
+    def zero_grad(self):
+        self.optimizer.zero_grad()
+        
     def back_propagate(self, loss):
-        """
-        """
-        pass
-
-    @abstractmethod
-    def merge_weights(self, another_net, merge_ksi):
-        """
-        """
-        pass
+        loss.backward(retain_graph=False)
+        self.optimizer.step()
+    #
+    def merge_weights_function(self):
+        return torch_utils.merge_weights
+    #
+    
+    
 

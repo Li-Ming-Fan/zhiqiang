@@ -25,13 +25,15 @@ class VanilaDQN(AbstractAgent):
         #
         self.max_step_gen = self.settings.agent_settings["max_step_gen"]
         #
+        self.qnet_target.eval_mode()
+        #
     
     #
     def act(self, observation):
         """
         """
-        batch_std = self.qnet_action.trans_list_observations([observation])
-        inference = self.qnet_action.infer(batch_std)
+        s_std = self.qnet_action.trans_list_observations([observation])
+        inference = self.qnet_action.infer(s_std)
         #
         action_values = inference[0]
         if self.policy_greedy or np.random.rand() > self.policy_epsilon:
@@ -40,44 +42,67 @@ class VanilaDQN(AbstractAgent):
             return torch.randint(0, self.num_actions, (1,))[0]
         #
 
+    def generate(self, max_step_gen, env, observation=None):
+        """ return: list_experiences, (s, a, r, s', info)
+        """
+        sum_rewards, list_experiences = self.rollout(max_step_gen, env, observation)
+        return list_experiences
+
     #
-    def optimize(self, batch_data, buffer):
-        """ optimization step
-            batch_data["data"]: list of (s, a, r, s', info)
+    def standardize_batch(self, batch_data):
+        """ batch_data["data"]: list of (s, a, r, s', info)
         """
         list_s, list_a, list_r, list_p, list_info = list(zip(*batch_data["data"]))
         #
-        # s
         s_std = self.qnet_action.trans_list_observations(list_s)
+        #
+        batch_std = {}
+        batch_std["s_std"] = s_std
+        batch_std["a"] = torch.tensor(list_a)
+        batch_std["r"] = torch.tensor(list_r)
+        #
+        p_std = self.qnet_action.trans_list_observations(list_p)
+        batch_std["p_std"] = p_std
+        #
+        return batch_std
+        #
+
+    def optimize(self, batch_std, buffer):
+        """ optimization step
+            batch_data["data"]: list of (s, a, r, s', info)
+        """
+        # s
+        s_std = batch_std["s_std"]
         s_av = self.qnet_action.infer(s_std)
-        indices = torch.LongTensor(list_a).unsqueeze(-1)
+        indices = batch_std["a"].long().unsqueeze(-1)
         s_exe_av = torch.gather(s_av, 1, indices)
         #
         # s'
-        p_std = self.qnet_action.trans_list_observations(list_p)
+        p_std = batch_std["p_std"]
         p_av = self.qnet_target.infer(p_std)   # [B, A]
         #
         # max value (action) at state s'
         max_p_av = torch.max(p_av, -1)[0]
         #
         # target
-        target = torch.tensor(list_r) + self.gamma * max_p_av
+        target = batch_std["r"] + self.gamma * max_p_av
         target = target.detach()
         #
         # loss
-        loss = target - s_exe_av    # [B, ]
+        loss = target - s_exe_av       # [B, ]
         loss = torch.mean(loss ** 2)
         #
         self.qnet_action.back_propagate(loss)
-        self.qnet_target.merge_weights(self.qnet_action, self.merge_ksi)
+        merge_function = self.qnet_target.merge_weights_function()
+        merge_function(self.qnet_target, self.qnet_action, self.merge_ksi)
         #
 
     #
-    def prepare_training(self):
-        self.qnet_action.prepare_training()
+    def train_mode(self):
+        self.qnet_action.train_mode()
 
-    def prepare_evaluating(self):
-        self.qnet_action.prepare_evaluating()
+    def eval_mode(self):
+        self.qnet_action.eval_mode()
     #
 
 

@@ -37,9 +37,9 @@ class SimpleTrainer():
             print(str_info)
             self.settings.logger.info(str_info)
             #
-            self.agent.prepare_evaluating()     # eval mode
+            self.agent.eval_mode()                   # eval mode
             for idx_gen in range(num_gen):
-                rewards, experience = self.agent.rollout(max_step, self.env)
+                experience = self.agent.generate(max_step, self.env)
                 self.buffer.add(experience)
             #
             # eval
@@ -61,10 +61,13 @@ class SimpleTrainer():
             print(str_info)
             self.settings.logger.info(str_info)
             #
-            self.agent.prepare_training()       # train mode
+            self.agent.train_mode()                  # train mode
             for idx_optim in range(num_optim):
+                # sample and standardize
                 batch_data = self.buffer.sample(batch_size)
-                self.agent.optimize(batch_data, self.buffer)
+                batch_std = self.agent.standardize_batch(batch_data)
+                # optimize
+                self.agent.optimize(batch_std, self.buffer)
             #
         #
         # final eval
@@ -73,7 +76,7 @@ class SimpleTrainer():
         print(str_info)
         self.settings.logger.info(str_info)
         #
-        self.agent.prepare_evaluating()         # eval mode
+        self.agent.eval_mode()                       # eval mode
         aver_rewards = self.agent.eval(num_eval_rollout, self.env)
         list_aver_rewards.append(aver_rewards)
         #
