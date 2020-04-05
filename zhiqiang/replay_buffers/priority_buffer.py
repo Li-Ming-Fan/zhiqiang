@@ -2,7 +2,7 @@
 import numpy as np
 
 
-from zhiqiang.replay_buffers import AbstractBuffer
+from . import AbstractBuffer
 
 
 class PriorityBuffer(AbstractBuffer):

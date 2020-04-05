@@ -1,6 +1,6 @@
 
 
-from zhiqiang.trainers import AbstractTrainer
+from . import AbstractTrainer
 
 class SimpleTrainer():
     """

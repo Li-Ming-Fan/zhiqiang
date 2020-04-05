@@ -1,6 +1,6 @@
 
 
-from zhiqiang.agents import AbstractAgent
+from . import AbstractAgent
 
 import numpy as np
 

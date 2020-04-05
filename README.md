@@ -40,19 +40,14 @@ More:
 ├── __init__.py
 ├── agents
 │   ├── __init__.py
-│   ├── acq_entropy.py
 │   ├── acq_vanila.py
-│   ├── acv_entropy.py
 │   ├── acv_vanila.py
-│   ├── ar_entropy.py
 │   ├── ar_vanila.py
-│   ├── dqn_distrib.py
 │   ├── dqn_double.py
 │   ├── dqn_dueling.py
 │   ├── dqn_mstep.py
 │   ├── dqn_priority.py
 │   ├── dqn_vanila.py
-│   ├── policy_entropy.py
 │   ├── policy_value.py
 │   └── policy_vanila.py
 ├── envs
