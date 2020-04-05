@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+# @package zhiqiang
+# @copyright Copyright (c) 2020, Ming-Fan Li.
+# @license APL v2.0
+
+
 from __future__ import with_statement
 
 import sys

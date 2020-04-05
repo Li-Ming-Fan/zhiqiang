@@ -2,7 +2,7 @@
 
 zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthening.
 
-A package for reinforcement learning algorithms. PyTorch.
+A platform for reinforcement learning algorithms. PyTorch.
 
 ## Examples
 
@@ -48,11 +48,12 @@ More:
 │   ├── ar_vanila.py
 │   ├── dqn_distrib.py
 │   ├── dqn_double.py
+│   ├── dqn_dueling.py
 │   ├── dqn_mstep.py
-│   ├── dqn_policy.py
 │   ├── dqn_priority.py
 │   ├── dqn_vanila.py
 │   ├── policy_entropy.py
+│   ├── policy_value.py
 │   └── policy_vanila.py
 ├── envs
 │   └── __init__.py
@@ -69,7 +70,8 @@ More:
     ├── __init__.py
     ├── basic_settings.py
     ├── data_paral.py
-    └── torch_utils.py
+    ├── torch_utils.py
+    └── uct_simple.py
 ```
 
 ## Quick Trial
@@ -143,7 +145,5 @@ pip install zhiqiang
 For usage examples of this package, please see:
 
 1, examples/
-
-
 
 </br>
