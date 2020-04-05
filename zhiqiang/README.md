@@ -119,6 +119,9 @@ fig = plt.figure(figsize=(8, 5))
 eval_period = settings.trainer_settings["eval_period"]
 list_x = [idx * eval_period for idx in range(len(list_aver_rewards))]
 #
+print(list_x)
+print(list_aver_rewards)
+#
 plt.plot(list_x, list_aver_rewards, label="Averaged Rewards", color="r", linewidth=2)
 plt.xlabel("Number Boost")
 plt.ylabel("Averaged Rewards")  # plt.title("Boost Curriculum")
