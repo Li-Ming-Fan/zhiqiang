@@ -33,7 +33,7 @@ class GridWorldQNet(torch.nn.Module, AbstractPQNet):
         self.optimizer = torch.optim.Adam(params, lr=self.agent_settings["lr"],
                                           weight_decay=self.agent_settings["l2reg"])
         #
-        self.reset()
+        self.reset(seed=agent_settings["seed"])
         #
 
     def reset(self, seed=100):

@@ -71,9 +71,15 @@ class SimpleTrainer():
             self.settings.logger.info(str_info)
             #
             self.agent.explore_mode()                # explore mode
+            count_better = 0
             for idx_gen in range(num_gen):
                 experience = self.agent.generate(max_aver_rewards, max_step, self.env)
+                if len(experience) > 0: count_better += 1
                 self.buffer.add(experience)
+            #
+            str_info = "count_better: %d" % count_better
+            print(str_info)
+            self.settings.logger.info(str_info)
             #
             # optimize
             str_info = "optimizing ..."

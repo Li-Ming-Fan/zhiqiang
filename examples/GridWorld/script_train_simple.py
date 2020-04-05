@@ -45,6 +45,6 @@ list_x = [idx * eval_period for idx in range(len(list_aver_rewards))]
 plt.plot(list_x, list_aver_rewards, label="Averaged Rewards", color="r", linewidth=2)
 plt.xlabel("Number Boost")
 plt.ylabel("Averaged Rewards")  # plt.title("Boost Curriculum")
-plt.xticks(list_x)              # plt.legend()
+# plt.xticks(list_x)              # plt.legend()
 plt.grid()
 plt.show()

@@ -7,7 +7,8 @@
         "gamma": 0.99,
         "optimizer_type": "adam",
         "lr": 0.001,
-        "l2reg": 0.00001
+        "l2reg": 0.00001,
+        "seed": 100
     },
     "env_settings": {
         "name": "GridWorld",
@@ -18,9 +19,9 @@
         "buffer_size": 5000
     },
     "trainer_settings": {
-        "num_boost": 10,
-        "num_gen": 50,
-        "num_optim": 1000,
+        "num_boost": 200,
+        "num_gen": 40,
+        "num_optim": 500,
         "merge_ksi": 1.0,
         "base_rewards": 0.0,
         "batch_size": 32,
