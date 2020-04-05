@@ -9,7 +9,13 @@ import torch
 
 class VanilaAC(AbstractAgent):
     """
-    """ 
+    while True:
+        a = actor.act(s)
+        sp, r, done, info = env.step(a)
+        td_error = critic.learn(s, r, sp)
+        actor.learn(s, a, td_error)
+        s = sp
+    """
     def __init__(self, settings, pnet_class, qnet_class):
         """
         """
@@ -162,14 +168,3 @@ class VanilaAC(AbstractAgent):
         self.policy_greedy = 0
         self.policy_epsilon = self.policy_epsilon_bak
     #
-
-
-"""
-while True:
-      a = actor.act(s)
-      sp, r, done, info = env.step(a)
-      td_error = critic.learn(s, r, sp)
-      actor.learn(s, a, td_error)
-      s = sp
-"""
-

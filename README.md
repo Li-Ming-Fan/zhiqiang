@@ -4,6 +4,10 @@ zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthen
 
 A package for reinforcement learning algorithms. PyTorch.
 
+## Examples
+
+TODO
+
 
 ## Description
 
@@ -30,9 +34,47 @@ from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
 from zhiqiang.agents.dqn_double import DoubleDQN as Agent
 ```
 
+More:
+```
+.
+├── __init__.py
+├── agents
+│   ├── __init__.py
+│   ├── acq_entropy.py
+│   ├── acq_vanila.py
+│   ├── acv_entropy.py
+│   ├── acv_vanila.py
+│   ├── ar_entropy.py
+│   ├── ar_vanila.py
+│   ├── dqn_distrib.py
+│   ├── dqn_double.py
+│   ├── dqn_mstep.py
+│   ├── dqn_policy.py
+│   ├── dqn_priority.py
+│   ├── dqn_vanila.py
+│   ├── policy_entropy.py
+│   └── policy_vanila.py
+├── envs
+│   └── __init__.py
+├── replay_buffers
+│   ├── __init__.py
+│   ├── priority_buffer.py
+│   └── simple_buffer.py
+├── trainers
+│   ├── __init__.py
+│   ├── alternate_trainer.py
+│   ├── paral_trainer.py
+│   └── simple_trainer.py
+└── utils
+    ├── __init__.py
+    ├── basic_settings.py
+    ├── data_paral.py
+    └── torch_utils.py
+```
+
 ## Quick Trial
 
-For a quick trial, try the codes in the file examples/GridWorld/script_train_simple.py:
+For a quick trial, please try codes in the file examples/GridWorld/script_train_simple.py:
 
 ```
 # define an env
@@ -80,7 +122,7 @@ list_x = [idx * eval_period for idx in range(len(list_aver_rewards))]
 plt.plot(list_x, list_aver_rewards, label="Averaged Rewards", color="r", linewidth=2)
 plt.xlabel("Number Boost")
 plt.ylabel("Averaged Rewards")  # plt.title("Boost Curriculum")
-plt.xticks(list_x)              # plt.legend()
+# plt.xticks(list_x)              # plt.legend()
 plt.grid()
 plt.show()
 ```
@@ -99,7 +141,6 @@ For usage examples of this package, please see:
 
 1, examples/
 
-2, TODO
 
 
 </br>
