@@ -29,9 +29,8 @@ class BasicSettings():
         self.load_from_json_file(file_path)
         #
         # except from saving
-        self.except_list = ["dir_base", "dir_log", "dir_settings", "dir_model",
-               "log_path", "dir_rel_log", "dir_rel_settings", "dir_rel_model",
-               "except_list"]
+        self.except_list = ["dir_log", "dir_settings", "dir_model",
+               "log_path", "except_list"]
         #
 
     #

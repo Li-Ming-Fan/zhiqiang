@@ -44,7 +44,6 @@ More:
 │   ├── __init__.py
 │   ├── acq_vanila.py
 │   ├── acv_vanila.py
-│   ├── ar_vanila.py
 │   ├── dqn_double.py
 │   ├── dqn_mstep.py
 │   ├── dqn_priority.py
@@ -59,7 +58,6 @@ More:
 │   └── simple_buffer.py
 ├── trainers
 │   ├── __init__.py
-│   ├── alternate_trainer.py
 │   ├── paral_trainer.py
 │   └── simple_trainer.py
 └── utils

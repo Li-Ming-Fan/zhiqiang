@@ -23,7 +23,7 @@
         "num_boost": 500,
         "num_gen_initial": 30,
         "num_gen_increment": 10,
-        "num_optim": 200,
+        "num_optim": 500,
         "merge_ksi": 1.0,
         "base_rewards": 0.0,
         "batch_size": 32,
