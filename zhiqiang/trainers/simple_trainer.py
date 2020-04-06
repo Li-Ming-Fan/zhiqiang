@@ -17,7 +17,8 @@ class SimpleTrainer():
         """
         """
         num_boost = self.settings.trainer_settings["num_boost"]
-        num_gen = self.settings.trainer_settings["num_gen"]
+        num_gen_initial = self.settings.trainer_settings["num_gen_initial"]
+        num_gen_increment = self.settings.trainer_settings["num_gen_increment"]
         num_optim = self.settings.trainer_settings["num_optim"]
         #
         batch_size = self.settings.trainer_settings["batch_size"]
@@ -29,6 +30,24 @@ class SimpleTrainer():
         max_aver_rewards = self.settings.trainer_settings["base_rewards"]
         list_aver_rewards = []
         #
+
+        # generate experience
+        str_info = "initial generating experience ..."
+        print(str_info)
+        self.settings.logger.info(str_info)
+        #
+        self.agent.explore_mode()                # explore mode
+        count_better = 0
+        for idx_gen in range(num_gen_initial):
+            experience = self.agent.generate(max_aver_rewards, max_step, self.env)
+            if len(experience) > 0: count_better += 1
+            self.buffer.add(experience)
+        #
+        str_info = "count_better: %d" % count_better
+        print(str_info)
+        self.settings.logger.info(str_info)
+        #
+        # boost      
         for idx_boost in range(num_boost):
             #
             str_info = "-" * 70
@@ -63,7 +82,6 @@ class SimpleTrainer():
                     max_aver_rewards = aver_rewards
                     self.agent.update_base_net(merge_ksi)
                     #
-                #
             #
             # generate experience
             str_info = "generating experience ..."
@@ -72,7 +90,7 @@ class SimpleTrainer():
             #
             self.agent.explore_mode()                # explore mode
             count_better = 0
-            for idx_gen in range(num_gen):
+            for idx_gen in range(num_gen_increment):
                 experience = self.agent.generate(max_aver_rewards, max_step, self.env)
                 if len(experience) > 0: count_better += 1
                 self.buffer.add(experience)

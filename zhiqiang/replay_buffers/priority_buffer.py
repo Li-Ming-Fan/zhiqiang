@@ -64,8 +64,8 @@ class PriorityBuffer(AbstractBuffer):
         """
         posi = batch_data["position"]
         prio = batch_data["priority"]
-        for posi_c in posi:
-            self.priority_list[posi_c] = prio[posi_c]
+        for idx, posi_c in enumerate(posi):
+            self.priority_list[posi_c] = prio[idx]
         #
         self._make_ready()
         #

@@ -32,6 +32,8 @@ Implemented Agents:
 ```
 from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
 from zhiqiang.agents.dqn_double import DoubleDQN as Agent
+from zhiqiang.agents.dqn_mstep import MStepDQN as Agent
+from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
 ```
 
 More:
@@ -43,9 +45,7 @@ More:
 │   ├── acq_vanila.py
 │   ├── acv_vanila.py
 │   ├── ar_vanila.py
-│   ├── dqn_distrib.py
 │   ├── dqn_double.py
-│   ├── dqn_dueling.py
 │   ├── dqn_mstep.py
 │   ├── dqn_priority.py
 │   ├── dqn_vanila.py
@@ -84,9 +84,12 @@ from gridworld_qnet import GridWorldQNet as QNet
 # pick an agent
 from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
 # from zhiqiang.agents.dqn_double import DoubleDQN as Agent
+# from zhiqiang.agents.dqn_mstep import MStepDQN as Agent
+# from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
 
 # pick a buffer
 from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
+# from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
 
 # pick a trainer
 from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
