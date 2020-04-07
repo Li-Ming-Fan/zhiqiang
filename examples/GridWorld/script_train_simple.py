@@ -19,6 +19,7 @@ from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
 
 # pick a trainer
 from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
+# from zhiqiang.trainers.paral_trainer import ParalTrainer as Trainer
 
 # settings file
 settings_filepath = "./examples/GridWorld/settings_dqn.json"

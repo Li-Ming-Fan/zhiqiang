@@ -67,6 +67,9 @@ class GridWorldQNet(torch.nn.Module, AbstractPQNet):
         return action_values
 
     #
+    def merge_weights_function(self):
+        return torch_utils.merge_weights
+    #
         
 
 

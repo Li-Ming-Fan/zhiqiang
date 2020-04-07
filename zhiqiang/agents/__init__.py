@@ -1,80 +1,81 @@
 
 
-from abc import ABCMeta, abstractmethod
-
-from zhiqiang.utils import torch_utils
-
 #
-class AbstractAgent(metaclass=ABCMeta):
+class AbstractAgent(object):
     """
     """
+    str_sep = "-"*70
+    necessary_elements = ["act", "generate"]
+    necessary_elements += ["standardize_batch", "optimize", "update_base_net"]
+    necessary_elements += ["train_mode", "eval_mode", "explore_mode"]
+    #
+    necessary_elements_info = """\n%s
+    necessary_elements:
+    >   function act(self, observation),
+        choose an action, based on observation
+        return: action
+
+        function generate(self, base_rewards, max_gen_step, env, observation=None)
+        generate experiences by a rollout
+        returning: list_experiences
+
+        ---
+
+        function standardize_batch(self, batch_data),
+        batch_data: dict, {"data": data, "position": posi}
+        return: batch_std
+
+        function optimize(self, batch_std, buffer=None),
+        optimization step            
+        buffer: replay_buffer, for possible update
+        returnining nothing
+
+        function update_base_net(self),
+        returnining nothing
+
+        ---
+
+        function train_mode(self),
+        same functionality with model.train() in torch,
+        but can be defined with more operations
+        returnining nothing
+
+        function eval_mode(self),
+        same functionality with model.eval() in torch,
+        but can be defined with more operations
+        returnining nothing
+
+        function explore_mode(self),
+        returnining nothing
+    \n
+    implemented_elements:
+    >   function rollout(self, max_step, env, observation=None),
+        returnining total_rewards, list_transitions
+
+        function eval(self, num_rollout, max_step, env, observation=None),
+        returnining sum_total_rewards / num_rollout
+    \n%s
+    """ % (str_sep, str_sep)
+    #
+    def print_info():
+        print(AbstractAgent.necessary_elements_info)
+    #
+    def check_necessary_elements(self, subclass_name):
+        """
+        """
+        subclass_elements = subclass_name.__dict__
+        for item in AbstractAgent.necessary_elements:
+            if item not in subclass_elements:
+                AbstractAgent.print_info()
+                assert False, "function %s NOT implemented. See above for information." % item 
+    #
     def __init__(self):
-        """
-        """
         pass
-
-    #
-    @abstractmethod
-    def act(self, observation):
-        """ choose an action, based on observation
-            return: action
-        """
-        pass
-
-    @abstractmethod
-    def generate(self, base_rewards, max_gen_step, env, observation=None):
-        """ return list_experiences
-        """
-        pass
-    #
-
-    #
-    @abstractmethod
-    def standardize_batch(self, batch_data):
-        """ batch_data: dict, {"data": data, "position": posi}
-            return: batch_std
-        """
-        pass
-
-    @abstractmethod
-    def optimize(self, batch_std, buffer=None):
-        """ optimization step            
-            buffer: replay_buffer, for possible update
-        """
-        pass
-    
-    @abstractmethod
-    def update_base_net(self):
-        """
-        """
-        pass
-    #
-
-    #
-    @abstractmethod
-    def train_mode(self):
-        """
-        """
-        pass
-
-    @abstractmethod
-    def eval_mode(self):
-        """
-        """
-        pass
-
-    @abstractmethod
-    def explore_mode(self):
-        """
-        """
-        pass
-    #
-
     #
     def rollout(self, max_step, env, observation=None):
         """
         """
-        sum_rewards = 0
+        total_rewards = 0
         list_transitions = []
         #
         if observation is None:
@@ -86,49 +87,77 @@ class AbstractAgent(metaclass=ABCMeta):
             exp = (observation, action, reward, sp, {"info_env": info_env})
             observation = sp
             #
-            sum_rewards += reward
+            total_rewards += reward
             list_transitions.append(exp)
             #
             if done: break
             #
         #
-        return sum_rewards, list_transitions
+        return total_rewards, list_transitions
         #
 
     def eval(self, num_rollout, max_step, env, observation=None):
         """
         """
-        aver_rewards = 0
+        sum_total_rewards = 0
         for idx in range(num_rollout):
             rewards, list_transitions = self.rollout(max_step, env)
-            aver_rewards += rewards
+            sum_total_rewards += rewards
         #
-        return aver_rewards / num_rollout
+        return sum_total_rewards / num_rollout
         #
     #
 
 #
-class AbstractPQNet(metaclass=ABCMeta):
+class AbstractPQNet(object):
     """
     """
+    str_sep = "-"*70
+    necessary_elements = ["trans_list_observations", "infer"] 
+    necessary_elements += ["merge_weights_function"]
+    #
+    necessary_elements_info = """\n%s
+    necessary_elements:
+    >   function trans_list_observations(self, list_observations),
+        trans list_observations to batch_std for model
+        returning: batch_std, dict
+
+        function infer(self, batch_std),
+        returning: action_values, or policy, or other
+
+        function merge_weights_function(self),
+        returnining: a function, such as torch_utils.merge_weights
+    \n
+    implemented_elements:
+    >   function eval_mode(self),
+        returnining nothing
+
+        function train_mode(self),
+        returnining nothing
+
+        function back_propagate(self, loss),
+        returnining nothing
+    \n%s
+    """ % (str_sep, str_sep)
+    #
+    def print_info():
+        print(AbstractPQNet.necessary_elements_info)
+    #
+    def check_necessary_elements(self, subclass_name):
+        """
+        """
+        subclass_elements = subclass_name.__dict__
+        for item in AbstractPQNet.necessary_elements:
+            if item not in subclass_elements:
+                AbstractPQNet.print_info()
+                assert False, "function %s NOT implemented. See above for information." % item 
+    #
     def __init__(self):
-        """
-        """
         pass
-
-    @abstractmethod
-    def trans_list_observations(self, list_observations):
-        """ trans list_observations to batch_std for model
-            return: batch_std, dict
-        """
-        pass
-
-    @abstractmethod
-    def infer(self, batch_std):
-        """ return: action_values, or policy
-        """
-        pass
-
+    #
+    """
+    Assuming torch
+    """ 
     #
     def eval_mode(self):
         self.eval()
@@ -140,9 +169,6 @@ class AbstractPQNet(metaclass=ABCMeta):
         self.optimizer.zero_grad()       
         loss.backward(retain_graph=False)
         self.optimizer.step()
-
-    def merge_weights_function(self):
-        return torch_utils.merge_weights
     #
     
     

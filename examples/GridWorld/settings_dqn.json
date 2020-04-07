@@ -29,6 +29,8 @@
         "batch_size": 32,
         "eval_period": 1,
         "num_eval_rollout": 100,
-        "max_roll_step": 50
+        "max_roll_step": 50,
+        "num_workers_initial": 4,
+        "num_workers_increment": 4
     }
 }

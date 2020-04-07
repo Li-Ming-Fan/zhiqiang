@@ -2,7 +2,10 @@
 
 zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthening.
 
-A platform for reinforcement learning algorithms. PyTorch.
+A platform for reinforcement learning algorithms.
+
+Work with PyTorch. But only in the implemented concrete agents and utils.torch_utils.
+
 
 ## Examples
 
@@ -19,6 +22,14 @@ from zhiqiang.envs import AbstractEnv
 from zhiqiang.replay_buffers import AbstractBuffer
 from zhiqiang.trainers import AbstractTrainer
 ```
+
+Run commands such as
+```
+AbstractPQNet.print_info()
+AbstractAgent.print_info()
+```
+to see necessary functions for corresponding concrete classes.
+
 
 Implemented Trainers and Buffers:
 ```
@@ -90,7 +101,8 @@ from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
 # from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
 
 # pick a trainer
-from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
+# from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
+from zhiqiang.trainers.paral_trainer import ParalTrainer as Trainer
 
 # settings file
 settings_filepath = "./examples/GridWorld/settings_dqn.json"

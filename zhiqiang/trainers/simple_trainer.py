@@ -2,12 +2,15 @@
 
 from . import AbstractTrainer
 
-class SimpleTrainer():
+class SimpleTrainer(AbstractTrainer):
     """
     """
     def __init__(self, settings, agent, env, buffer):
         """
         """
+        super(SimpleTrainer, self).__init__()
+        self.check_necessary_elements(SimpleTrainer)
+
         self.settings = settings
         self.agent = agent
         self.env = env
