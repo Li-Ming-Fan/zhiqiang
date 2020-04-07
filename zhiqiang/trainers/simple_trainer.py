@@ -5,16 +5,16 @@ from . import AbstractTrainer
 class SimpleTrainer(AbstractTrainer):
     """
     """
-    def __init__(self, settings, agent, env, buffer):
+    def __init__(self, settings, agent_class, agent_modules, env_class, buffer_class):
         """
         """
         super(SimpleTrainer, self).__init__()
         self.check_necessary_elements(SimpleTrainer)
 
         self.settings = settings
-        self.agent = agent
-        self.env = env
-        self.buffer = buffer
+        self.agent = agent_class(settings, agent_modules)
+        self.agent.env = env_class(settings)
+        self.buffer = buffer_class(settings)
 
     def train(self):
         """
@@ -42,7 +42,7 @@ class SimpleTrainer(AbstractTrainer):
         self.agent.explore_mode()                # explore mode
         count_better = 0
         for idx_gen in range(num_gen_initial):
-            experience = self.agent.generate(max_aver_rewards, max_step, self.env)
+            experience = self.agent.generate(max_aver_rewards, max_step)
             if len(experience) > 0: count_better += 1
             self.buffer.add(experience)
         #
@@ -68,7 +68,7 @@ class SimpleTrainer(AbstractTrainer):
                 print(str_info)
                 self.settings.logger.info(str_info)
                 #
-                aver_rewards = self.agent.eval(num_eval_rollout, max_step, self.env)
+                aver_rewards = self.agent.eval(num_eval_rollout, max_step)
                 list_aver_rewards.append(aver_rewards)
                 #
                 str_info = "max_aver_rewards, aver_rewards: %f, %f" % (
@@ -94,7 +94,7 @@ class SimpleTrainer(AbstractTrainer):
             self.agent.explore_mode()                # explore mode
             count_better = 0
             for idx_gen in range(num_gen_increment):
-                experience = self.agent.generate(max_aver_rewards, max_step, self.env)
+                experience = self.agent.generate(max_aver_rewards, max_step)
                 if len(experience) > 0: count_better += 1
                 self.buffer.add(experience)
             #
@@ -124,7 +124,7 @@ class SimpleTrainer(AbstractTrainer):
         self.settings.logger.info(str_info)
         #
         self.agent.eval_mode()                       # eval mode
-        aver_rewards = self.agent.eval(num_eval_rollout, max_step, self.env)
+        aver_rewards = self.agent.eval(num_eval_rollout, max_step)
         list_aver_rewards.append(aver_rewards)
         #
         str_info = "aver_rewards: %f" % aver_rewards

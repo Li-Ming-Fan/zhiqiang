@@ -6,16 +6,23 @@ from ..utils.data_parallelism import DataParallelism
 class ParalTrainer(AbstractTrainer):
     """
     """
-    def __init__(self, settings, agent, buffer, env_class):
+    def __init__(self, settings, agent_class, agent_modules, env_class, buffer_class):
         """
         """
         super(ParalTrainer, self).__init__()
         self.check_necessary_elements(ParalTrainer)
 
         self.settings = settings
-        self.agent = agent
-        self.env_class = env_class
-        self.buffer = buffer
+        self.agent = agent_class(settings, agent_modules)
+        self.agent.env = env_class(settings)
+        self.buffer = buffer_class(settings)
+
+        self.num_workers = self.settings.trainer_settings["num_workers"]
+        self.list_agents = []
+        for idx in range(self.num_workers):
+            agent = agent_class(self.settings, agent_modules)
+            agent.env = env_class(self.settings)
+            self.list_agents.append(agent)
 
     def train(self):
         """

@@ -8,14 +8,14 @@ from gridworld_qnet import GridWorldQNet as QNet
 
 # pick an agent
 from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
-# from zhiqiang.agents.dqn_double import DoubleDQN as Agent
-# from zhiqiang.agents.dqn_mstep import MStepDQN as Agent
-# from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
+from zhiqiang.agents.dqn_double import DoubleDQN as Agent
+from zhiqiang.agents.dqn_mstep import MStepDQN as Agent
+from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
 
 
 # pick a buffer
 from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
-# from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
+from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
 
 # pick a trainer
 from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
@@ -32,10 +32,7 @@ settings = BasicSettings(settings_filepath)
 settings.check_settings()
 settings.display()
 #
-env = Env(settings)
-buffer = Buffer(settings)
-agent = Agent(settings, QNet)
-trainer = Trainer(settings, agent, env, buffer)
+trainer = Trainer(settings, Agent, {"qnet": QNet}, Env, Buffer)
 #
 # train
 list_aver_rewards = trainer.train()

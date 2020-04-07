@@ -10,12 +10,14 @@ import torch
 class MStepDQN(AbstractAgent):
     """
     """
-    def __init__(self, settings, qnet_class):
+    def __init__(self, settings, agent_modules, env=None):
         """
         """
         self.settings = settings
-        self.qnet_action = qnet_class(self.settings.agent_settings)
-        self.qnet_target = qnet_class(self.settings.agent_settings)        
+        self.qnet_class = agent_modules["qnet"]
+        self.qnet_action = self.qnet_class(self.settings.agent_settings)
+        self.qnet_target = self.qnet_class(self.settings.agent_settings)
+        self.env = env       
         #
         self.policy_greedy = self.settings.agent_settings["policy_greedy"]
         self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
@@ -47,10 +49,10 @@ class MStepDQN(AbstractAgent):
             return torch.randint(0, self.num_actions, (1,))[0]
         #
 
-    def generate(self, base_rewards, max_step_gen, env, observation=None):
+    def generate(self, base_rewards, max_step_gen, observation=None):
         """ return: list_experiences, (s, a, r, s', info)
         """
-        sum_rewards, list_experiences = self.rollout(max_step_gen, env, observation)
+        sum_rewards, list_experiences = self.rollout(max_step_gen, observation)
         if sum_rewards > base_rewards:
             list_mstep_experiences = []
             num_transitions = len(list_experiences)

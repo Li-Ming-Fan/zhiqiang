@@ -2,24 +2,21 @@
 
 class AbstractBuffer(object):
     """
-    """
-    str_sep = "-"*70
-    necessary_elements = ["add", "sample"]
-    #
-    necessary_elements_info = """\n%s
     necessary_elements:
-    >   function add(self, list_experiences),
+        function add(self, list_experiences),
         returning nothing
 
         function sample(self, num),
         make a sampling, 
         returning: a dict,
         batch_sample = {"data": [], "position": []}
-    \n%s
-    """ % (str_sep, str_sep)
+    """
+    necessary_elements = ["add", "sample"]
     #
     def print_info():
-        print(AbstractBuffer.necessary_elements_info)
+        print("-" * 70)
+        print(AbstractBuffer.__doc__)
+        print("-" * 70)
     #
     def check_necessary_elements(self, subclass_name):
         """
@@ -33,3 +30,10 @@ class AbstractBuffer(object):
     def __init__(self):
         pass
     #
+
+#
+if __name__ == "__main__":
+
+    AbstractBuffer.print_info()
+    
+

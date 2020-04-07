@@ -2,13 +2,8 @@
 
 class AbstractEnv(object):
     """
-    """
-    str_sep = "-"*70
-    necessary_elements = ["reset", "step", "render", "close"]
-    #
-    necessary_elements_info = """\n%s
     necessary_elements:
-    >   function reset(self),
+        function reset(self),
         returning: observation
 
         function step(self, action),
@@ -19,19 +14,21 @@ class AbstractEnv(object):
 
         function close(self),
         for compatibilty with gym
-    \n
+    
     possible_elements:
-    >   function restore(self, state),
+        function restore(self, state),
         restore from a given state
 
         function export(self),
         export the current state
         returning a state
-    \n%s
-    """ % (str_sep, str_sep)
+    """
+    necessary_elements = ["reset", "step", "render", "close"]
     #
     def print_info():
-        print(AbstractEnv.necessary_elements_info)
+        print("-" * 70)
+        print(AbstractEnv.__doc__)
+        print("-" * 70)
     #
     def check_necessary_elements(self, subclass_name):
         """
@@ -46,3 +43,8 @@ class AbstractEnv(object):
         pass
     #
 
+#
+if __name__ == "__main__":
+
+    AbstractEnv.print_info()
+    

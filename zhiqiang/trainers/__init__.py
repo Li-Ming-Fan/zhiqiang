@@ -4,18 +4,16 @@
 
 class AbstractTrainer(object):
     """
-    """
-    str_sep = "-"*70
-    necessary_elements = ["train"]
-    necessary_elements_info = """\n%s
     necessary_elements:
-    >   function train(self),
+        function train(self),
         returning nothing.
-    \n%s
-    """ % (str_sep, str_sep)
+    """
+    necessary_elements = ["train"]
     #
     def print_info():
-        print(AbstractTrainer.necessary_elements_info)
+        print("-" * 70)
+        print(AbstractTrainer.__doc__)
+        print("-" * 70)
     #
     def check_necessary_elements(self, subclass_name):
         """
