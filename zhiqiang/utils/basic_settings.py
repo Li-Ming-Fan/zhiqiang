@@ -16,6 +16,8 @@ class BasicSettings():
         self.dir_rel_settings = "settings"
         self.dir_rel_model = "stat_dict"
         self.log_path = None
+        self.model_path = None
+        self.model_path_timed = None 
         #
         self.agent_settings = {"name": "agentname"}
         self.env_settings = {"name": "envname"}
@@ -29,8 +31,8 @@ class BasicSettings():
         self.load_from_json_file(file_path)
         #
         # except from saving
-        self.except_list = ["dir_log", "dir_settings", "dir_model",
-               "log_path", "except_list"]
+        self.except_list = ["dir_log", "dir_settings", "dir_model", "str_datetime",
+               "log_path", "model_path", "model_path_timed", "except_list"]
         #
 
     #
@@ -48,16 +50,22 @@ class BasicSettings():
         if not os.path.exists(self.dir_model): os.mkdir(self.dir_model)
         #
         # logger
-        str_datetime = time.strftime("%Y-%m-%d-%H-%M-%S")
+        self.str_datetime = time.strftime("%Y-%m-%d-%H-%M-%S")
         if self.log_path is None: self.log_path = os.path.join(
                 self.dir_log, "log_%s_%s_%s.txt" % (self.agent_settings["name"],
-                self.env_settings["name"], str_datetime) )
+                self.env_settings["name"], self.str_datetime) )
         #
         self.logger = self.create_logger(self.log_path)
         print("settings checked")
         #
         self.logger.info(self.trans_info_to_dict())
-        # self.display()
+        #
+        # model_path
+        agent_name = self.agent_settings["name"]
+        env_name = self.env_settings["name"]
+        model_file = "model_%s_%s_eval.stat_dict" % (env_name, agent_name)
+        self.model_path = os.path.join(self.dir_base, self.dir_rel_model, model_file)
+        self.model_path_timed = self.model_path.replace("eval", self.str_datetime)
         #
 
     def create_logger(self, log_path):

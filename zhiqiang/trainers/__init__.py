@@ -5,10 +5,10 @@
 class AbstractTrainer(object):
     """
     necessary_elements:
-        function train(self),
-        returning nothing.
+        function do_train(self),
+        returning list_aver_rewards.
     """
-    necessary_elements = ["train"]
+    necessary_elements = ["do_train"]
     #
     def print_info():
         print("-" * 70)

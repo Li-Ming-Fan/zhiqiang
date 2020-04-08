@@ -1,4 +1,8 @@
 {
+    "dir_base": "./data_root",
+    "dir_rel_log": "log",
+    "dir_rel_settings": "settings",
+    "dir_rel_model": "stat_dict",
     "agent_settings": {
         "name": "agentname"
     },

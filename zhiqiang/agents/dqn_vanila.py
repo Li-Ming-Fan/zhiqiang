@@ -10,14 +10,16 @@ import torch
 class VanilaDQN(AbstractAgent):
     """
     """
-    def __init__(self, settings, agent_modules, env=None):
+    def __init__(self, settings, agent_modules, env=None, is_learner=True):
         """
         """
+        super(VanilaDQN, self).__init__()
+        self.check_necessary_elements(VanilaDQN)
+        #
         self.settings = settings
         self.qnet_class = agent_modules["qnet"]
-        self.qnet_action = self.qnet_class(self.settings.agent_settings)
-        self.qnet_target = self.qnet_class(self.settings.agent_settings)
-        self.env = env    
+        self.qnet_action = self.qnet_class(self.settings.agent_settings)        
+        self.env = env
         #
         self.policy_greedy = self.settings.agent_settings["policy_greedy"]
         self.policy_epsilon = self.settings.agent_settings["policy_epsilon"]
@@ -27,8 +29,11 @@ class VanilaDQN(AbstractAgent):
         self.num_actions = self.settings.agent_settings["num_actions"]
         self.gamma = torch.tensor(self.settings.agent_settings["gamma"])
         #
-        self.update_base_net(1.0)
-        self.qnet_target.eval_mode()
+        self.is_learner = is_learner
+        if self.is_learner:
+            self.qnet_target = self.qnet_class(self.settings.agent_settings)
+            self.update_base_net(1.0)
+            self.qnet_target.eval_mode()
         #
     
     #
@@ -108,6 +113,14 @@ class VanilaDQN(AbstractAgent):
         merge_function = self.qnet_target.merge_weights_function()
         merge_function(self.qnet_target, self.qnet_action, merge_ksi)
         #
+
+    def copy_params(self, another):
+        """
+        """
+        merge_function = self.qnet_target.merge_weights_function()
+        merge_function(self.qnet_action, another.qnet_action, 1.0)
+        if self.is_learner:
+            merge_function(self.qnet_action, another.qnet_target, 1.0)
         
     #
     def train_mode(self):
@@ -124,5 +137,14 @@ class VanilaDQN(AbstractAgent):
         self.policy_greedy = 0
         self.policy_epsilon = self.policy_epsilon_bak
     #
+    def save(self, model_path):
+        """
+        """
+        pass
+
+    def load(self, model_path):
+        """
+        """
+        pass
 
 

@@ -1,4 +1,8 @@
 {
+    "dir_base": "./data_root",
+    "dir_rel_log": "log",
+    "dir_rel_settings": "settings",
+    "dir_rel_model": "stat_dict",
     "agent_settings": {
         "name": "VanilaDQN",        
         "policy_greedy": 0,
@@ -20,7 +24,7 @@
         "buffer_size": 5000
     },
     "trainer_settings": {
-        "num_boost": 500,
+        "num_boost": 200,
         "num_gen_initial": 30,
         "num_gen_increment": 10,
         "num_optim": 500,
@@ -30,7 +34,6 @@
         "eval_period": 1,
         "num_eval_rollout": 100,
         "max_roll_step": 50,
-        "num_workers_initial": 4,
-        "num_workers_increment": 4
+        "num_workers": 4
     }
 }

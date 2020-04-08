@@ -41,6 +41,14 @@ class AbstractAgent(object):
         function explore_mode(self),
         returnining nothing
 
+        ---
+
+        function load(self, model_path),
+        returnining nothing
+
+        function save(self, model_path),
+        returnining nothing
+
     implemented_elements:
         function rollout(self, max_step, observation=None),
         returnining total_rewards, list_transitions
@@ -51,6 +59,7 @@ class AbstractAgent(object):
     necessary_elements = ["act", "generate"]
     necessary_elements += ["standardize_batch", "optimize", "update_base_net"]
     necessary_elements += ["train_mode", "eval_mode", "explore_mode"]
+    necessary_elements += ["load", "save"]
     #
     def print_info():
         print("-" * 70)
