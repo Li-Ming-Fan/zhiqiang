@@ -1,10 +1,12 @@
 
 
 from . import AbstractAgent
+from ..utils import load_data_from_pkl, save_data_to_pkl
 
 import numpy as np
 
 import torch
+import torch.nn.functional as F
 
 
 class EntropyACQ(AbstractAgent):
@@ -12,7 +14,7 @@ class EntropyACQ(AbstractAgent):
     while True:
         a = actor.act(s)
         sp, r, done, info = env.step(a)
-        critic.learn(s, r, a, sp)
+        critic.learn(s, a, r, sp)
         actor.learn(s, a, critic(s, a))
         s = sp
     """
@@ -50,7 +52,7 @@ class EntropyACQ(AbstractAgent):
         """
         """
         s_std = self.pnet_base.trans_list_observations([observation])
-        inference = self.pnet.infer(s_std)
+        inference = self.pnet_base.infer(s_std)
         #
         self.action_probs = inference[0]
         if self.policy_greedy:
@@ -72,7 +74,7 @@ class EntropyACQ(AbstractAgent):
             return torch.multinomial(self.action_probs, 1)[0]
         #
 
-    def generate(self, base_rewards, max_step_gen, env, observation=None):
+    def generate(self, base_rewards, max_step_gen, observation=None):
         """ return: list_experiences, (s, a, r, s', info)
             self.rollout() depends on self.act() and env.
         """
@@ -138,8 +140,9 @@ class EntropyACQ(AbstractAgent):
 
         # loss_pg
         log_ap = torch.log(s_exe_ap.squeeze(-1))       # [B, ]
-        # target
-        target = s_exe_av_squeeze.detach()             # [B, ]
+        # targets
+        target = F.relu(s_exe_av_squeeze)
+        target = target.detach()                        # [B, ]
         #
         # entropy
         log_prob_all = torch.log(s_ap)                     # [B, NA]
@@ -158,6 +161,15 @@ class EntropyACQ(AbstractAgent):
         merge_function = self.pnet_base.merge_weights_function()
         merge_function(self.pnet_base, self.pnet_learner, merge_ksi)
         #
+    
+    def copy_params(self, another):
+        """
+        """
+        merge_function = self.pnet_base.merge_weights_function()
+        merge_function(self.pnet_base, another.pnet_base, 1.0)
+        if self.is_learner:
+            merge_function(self.pnet_learner, another.pnet_learner, 1.0)
+            merge_function(self.qnet_learner, another.qnet_learner, 1.0)
         
     #
     def train_mode(self):

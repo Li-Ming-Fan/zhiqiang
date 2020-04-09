@@ -60,13 +60,13 @@ More:
 ├── __init__.py
 ├── agents
 │   ├── __init__.py
-│   ├── acq_vanila.py
-│   ├── acv_vanila.py
+│   ├── acq_entropy.py
+│   ├── acv_entropy.py
 │   ├── dqn_double.py
 │   ├── dqn_mstep.py
 │   ├── dqn_priority.py
 │   ├── dqn_vanila.py
-│   └── policy_replay.py
+│   └── policy_mstep.py
 ├── envs
 │   └── __init__.py
 ├── replay_buffers

@@ -65,7 +65,7 @@ def main(settings):
     """
     """
     # env
-    if env == "GridWorld":
+    if settings.env == "GridWorld":
         from grid_world import GridWorld as Env
         from gridworld_pnet import GridWorldPNet as PNet
         from gridworld_qnet import GridWorldQNet as QNet
@@ -73,31 +73,31 @@ def main(settings):
         agent_modules = {"qnet": QNet, "pnet": PNet, "vnet": VNet}
     
     # agent
-    if agent == "VanilaDQN":
+    if settings.agent == "VanilaDQN":
         from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
-    elif agent == "DoubleDQN":
+    elif settings.agent == "DoubleDQN":
         from zhiqiang.agents.dqn_double import DoubleDQN as Agent
-    elif agent == "MStepDQN":
+    elif settings.agent == "MStepDQN":
         from zhiqiang.agents.dqn_mstep import MStepDQN as Agent
-    elif agent == "PriorityDQN":
+    elif settings.agent == "PriorityDQN":
         from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
-    elif agent == "VanilaACQ":
-        from zhiqiang.agents.acq_vanila import VanilaACQ as Agent
-    elif agent == "VanilaACV":
-        from zhiqiang.agents.acv_vanila import VanilaACV as Agent
-    elif agent == "VanilaPolicy":
-        from zhiqiang.agents.policy_vanila import VanilaPolicy as Agent
+    elif settings.agent == "EntropyACQ":
+        from zhiqiang.agents.acq_entropy import EntropyACQ as Agent
+    elif settings.agent == "EntropyACV":
+        from zhiqiang.agents.acv_entropy import EntropyACV as Agent
+    elif settings.agent == "MStepPolicy":
+        from zhiqiang.agents.policy_mstep import MStepPolicy as Agent
     
     # buffer
-    if buffer == "SimpleBuffer":
+    if settings.buffer == "SimpleBuffer":
         from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
-    elif buffer == "PriorityBuffer":
+    elif settings.buffer == "PriorityBuffer":
         from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
         
     # trainer
-    if trainer == "SimpleTrainer":
+    if settings.trainer == "SimpleTrainer":
         from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
-    elif trainer == "ParalTrainer":
+    elif settings.trainer == "ParalTrainer":
         from zhiqiang.trainers.paral_trainer import ParalTrainer as Trainer
     #
 

@@ -64,7 +64,7 @@ class GridWorldVNet(torch.nn.Module, AbstractPQNet):
         #
         middle = F.relu(self.linear_0(features))     # [B, M]
         last = self.linear_1(middle)        # [B, NA]
-        state_value = torch.mean(last, -1)
+        state_value = torch.sum(last, -1)
         return state_value
 
     #
