@@ -38,6 +38,7 @@ class MStepPolicy(AbstractAgent):
         if self.is_learner:
             self.pnet_learner = self.pnet_class(self.settings.agent_settings)
             self.update_base_net(1.0)
+            self.merge_ksi = self.settings.agent_settings["merge_ksi"]
         #
     
     #
@@ -143,6 +144,7 @@ class MStepPolicy(AbstractAgent):
         loss = torch.mean(loss)
         #
         self.pnet_learner.back_propagate(loss)
+        self.update_base_net(self.merge_ksi)
         #
 
     def update_base_net(self, merge_ksi):

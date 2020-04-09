@@ -35,7 +35,7 @@ class PriorityDQN(AbstractAgent):
         if self.is_learner:
             self.qnet_learner = self.qnet_class(self.settings.agent_settings)
             self.update_base_net(1.0)
-            
+            self.merge_ksi = self.settings.agent_settings["merge_ksi"]            
         #
     
     #
@@ -127,6 +127,7 @@ class PriorityDQN(AbstractAgent):
         buffer.update(batch_std)
         #
         self.qnet_learner.back_propagate(loss)
+        self.update_base_net(self.merge_ksi)
         #
 
     def update_base_net(self, merge_ksi):

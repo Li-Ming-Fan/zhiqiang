@@ -34,7 +34,8 @@ class VanilaDQN(AbstractAgent):
         self.is_learner = is_learner
         if self.is_learner:
             self.qnet_learner = self.qnet_class(self.settings.agent_settings)
-            self.update_base_net(1.0)            
+            self.update_base_net(1.0)
+            self.merge_ksi = self.settings.agent_settings["merge_ksi"]
         #
     
     #
@@ -120,6 +121,7 @@ class VanilaDQN(AbstractAgent):
         loss = torch.mean(loss ** 2)
         #
         self.qnet_learner.back_propagate(loss)
+        self.update_base_net(self.merge_ksi)
         #
 
     def update_base_net(self, merge_ksi):

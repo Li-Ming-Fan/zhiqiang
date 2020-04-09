@@ -10,6 +10,7 @@
         "gamma": 0.9,
         "reg_entropy": 0.1,
         "mstep": 5,
+        "merge_ksi": 1.0,
         "optimizer_type": "adam",
         "lr": 0.001,
         "l2reg": 0.00001,
