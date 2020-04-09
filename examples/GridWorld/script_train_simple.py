@@ -22,7 +22,7 @@ from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
 # from zhiqiang.trainers.paral_trainer import ParalTrainer as Trainer
 
 # settings file
-settings_filepath = "./examples/GridWorld/settings_gridworld.json"
+settings_filepath = "./data_root/settings/settings_gridworld.json"
 
 ##
 #

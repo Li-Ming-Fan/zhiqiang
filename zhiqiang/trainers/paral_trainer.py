@@ -109,7 +109,7 @@ class ParalTrainer(AbstractTrainer):
             self.settings.logger.info(str_info)
             # update
             self.max_aver_rewards = aver_rewards
-            self.agent.update_base_net(self.merge_ksi)            
+            self.agent.update_base_net(1.0)            
             #
 
     def do_exploration(self, num_gen):
@@ -145,7 +145,6 @@ class ParalTrainer(AbstractTrainer):
         num_eval_rollout = self.settings.trainer_settings["num_eval_rollout"]
         self.max_step = self.settings.trainer_settings["max_roll_step"]
         #
-        self.merge_ksi = self.settings.trainer_settings["merge_ksi"]
         self.max_aver_rewards = self.settings.trainer_settings["base_rewards"]
         self.list_aver_rewards = []
         #
