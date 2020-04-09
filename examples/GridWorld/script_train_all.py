@@ -15,7 +15,7 @@ if __name__ == "__main__":
     ##
     args.trainer = "SimpleTrainer"
     # args.trainer = "ParalTrainer"
-    settings = settings_with_args(args)
+    settings_base = settings_with_args(args)
 
     ##
     agent_list = ["VanilaDQN", "DoubleDQN", "MStepDQN", "PriorityDQN"]
@@ -25,7 +25,8 @@ if __name__ == "__main__":
     #
 
     for agent in agent_list:
-
+        #
+        settings = copy.deepcopy(settings_base)
         settings.agent = agent
         
         if "Priority" in agent:
