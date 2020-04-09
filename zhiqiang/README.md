@@ -2,7 +2,7 @@
 
 zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthening.
 
-A platform for reinforcement learning algorithms.
+A platform for reinforcement learning.
 
 Work with PyTorch, but only in the implemented concrete agents and utils.torch_utils.
 
