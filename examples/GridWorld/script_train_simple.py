@@ -23,12 +23,16 @@ from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
 
 # settings file
 settings_filepath = "./data_root/settings/settings_gridworld.json"
+agent_name = "agentname"
+env_name = "GridWorld"
 
 ##
 #
 from zhiqiang.utils.basic_settings import BasicSettings
 #
 settings = BasicSettings(settings_filepath)
+settings.env = env_name
+settings.agent = agent_name
 settings.check_settings()
 settings.display()
 #
