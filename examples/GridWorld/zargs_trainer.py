@@ -117,6 +117,10 @@ def main(settings):
         list_rewards = trainer_inst.do_play(settings.num_play_times)
     #
 
+    # close logger
+    settings.close_logger()
+    #
+
 #
 if __name__ == '__main__':
     """
