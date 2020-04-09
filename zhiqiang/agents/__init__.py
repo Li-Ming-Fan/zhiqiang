@@ -5,7 +5,13 @@ class AbstractAgent(object):
     """
     necessary_elements:
         function act(self, observation),
-        choose an action, based on observation
+        choose an action, based on observation,
+        for play, exploration,
+        return: action
+
+        function act_with_learner(self, observation),
+        choose an action, based on observation,
+        for evaluation of the learner
         return: action
 
         function generate(self, base_rewards, max_gen_step, observation=None)
@@ -21,43 +27,47 @@ class AbstractAgent(object):
         function optimize(self, batch_std, buffer=None),
         optimization step            
         buffer: replay_buffer, for possible update
-        returnining nothing
+        returning nothing
 
         function update_base_net(self),
-        returnining nothing
+        returning nothing
+
+        def copy_params(self, another),
+        returning nothing
 
         ---
 
         function train_mode(self),
         same functionality with model.train() in torch,
         but can be defined with more operations
-        returnining nothing
+        returning nothing
 
         function eval_mode(self),
         same functionality with model.eval() in torch,
         but can be defined with more operations
-        returnining nothing
+        returning nothing
 
         function explore_mode(self),
-        returnining nothing
+        returning nothing
 
         ---
 
         function load(self, model_path),
-        returnining nothing
+        returning nothing
 
         function save(self, model_path),
-        returnining nothing
+        returning nothing
 
     implemented_elements:
-        function rollout(self, max_step, observation=None),
-        returnining total_rewards, list_transitions
+        function rollout(self, max_step, observation=None, mode="learner"),
+        returning list_reward, list_transitions
 
-        function eval(self, num_rollout, max_step, observation=None),
-        returnining sum_total_rewards / num_rollout
+        function eval(self, num_rollout, max_step, observation=None, mode="learner"),
+        returning sum_total_rewards / num_rollout
     """
-    necessary_elements = ["act", "generate"]
-    necessary_elements += ["standardize_batch", "optimize", "update_base_net"]
+    necessary_elements = ["act", "act_with_learner", "generate"]
+    necessary_elements += ["standardize_batch", "optimize"]
+    necessary_elements += ["update_base_net", "copy_params"]
     necessary_elements += ["train_mode", "eval_mode", "explore_mode"]
     necessary_elements += ["load", "save"]
     #
@@ -78,37 +88,42 @@ class AbstractAgent(object):
     def __init__(self):
         pass
     #
-    def rollout(self, max_step, observation=None):
+    def rollout(self, max_step, observation=None, mode="learner"):
         """
         """
-        total_rewards = 0
+        list_reward = []
         list_transitions = []
         #
         if observation is None:
             observation = self.env.reset()
         #
+        if mode == "learner":
+            act_function = self.act_with_learner   # for eval
+        else:   # "base", or others
+            act_function = self.act  # for exploration, play
+        #
         for step in range(max_step):
-            action = self.act(observation)
+            action = act_function(observation)
             sp, reward, done, info_env = self.env.step(action)
             exp = (observation, action, reward, sp, {"info_env": info_env})
             observation = sp
             #
-            total_rewards += reward
+            list_reward.append(reward)
             list_transitions.append(exp)
             #
             if done: break
             #
         #
-        return total_rewards, list_transitions
+        return list_reward, list_transitions
         #
 
-    def eval(self, num_rollout, max_step, observation=None):
+    def eval(self, num_rollout, max_step, observation=None, mode="learner"):
         """
         """
         sum_total_rewards = 0
         for idx in range(num_rollout):
-            rewards, list_transitions = self.rollout(max_step)
-            sum_total_rewards += rewards
+            list_r, list_transitions = self.rollout(max_step, observation, mode)
+            sum_total_rewards += sum(list_r)
         #
         return sum_total_rewards / num_rollout
         #

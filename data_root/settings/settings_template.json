@@ -3,12 +3,12 @@
     "dir_rel_log": "log",
     "dir_rel_settings": "settings",
     "dir_rel_model": "stat_dict",
-    "agent_settings": {
-        "name": "agentname"
-    },
-    "env_settings": {
-        "name": "envname"
-    },
+    "agent": "agentname",
+    "env": "envname",
+    "buffer": "buffername",
+    "trainer": "trainername",
+    "agent_settings": {},
+    "env_settings": {},
     "buffer_settings": {
         "buffer_size": 5000
     },

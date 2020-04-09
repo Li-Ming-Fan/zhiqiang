@@ -1,8 +1,11 @@
 
+import os
+import time
 import numpy as np
 import itertools
 import scipy.misc
 import matplotlib.pyplot as plt
+import imageio
 
 from zhiqiang.envs import AbstractEnv
 
@@ -101,20 +104,36 @@ class GridWorld(AbstractEnv):
         #        
         return pic
 
-    def display(self, figure_handle=None):
+    def display(self, state=None, show=True, step=None, score=None):
         """
         """
-        if figure_handle is not None:
-            plt.close(figure_handle)
+        if state is None:
+            state = self.state
+        #
+        # grid = plt.GridSpec(1, 5, wspace=0.5, hspace=0.5)
+        # plt.subplot(grid[0, 0:3])
+        pic = self.map_to_pic(state)
+        plt.imshow(pic, interpolation="nearest")
+        # plt.subplot(grid[0, 4])
+        if step is not None:
+            if score is not None:
+                plt.title("step: %d, score: %f" % (step, score))
+            else:
+                plt.title("step: %d" % (step, ))
         else:
-            figure_handle = 0
+            if score is not None:
+                plt.title("score: %f" % (score, ))
+            #
         #
-        figure_handle_new = figure_handle + 1
-        figure = plt.figure(figure_handle_new)
-        plt.imshow(self.map_to_pic(self.state), interpolation="nearest")
-        plt.show()
+        if show:
+            plt.show()
         #
-        return figure_handle_new
+        filename = "gridworld_temp.eps"  # eps < png < jpg
+        plt.savefig(filename)
+        pic_with_score = imageio.imread(filename) 
+        os.remove(filename)
+        #
+        return pic, pic_with_score
         #
     
     def get_new_posi(self):

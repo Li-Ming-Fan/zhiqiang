@@ -9,13 +9,13 @@ from zhiqiang.utils import torch_utils
 from zhiqiang.agents import AbstractPQNet
 
 
-class GridWorldQNet(torch.nn.Module, AbstractPQNet):
+class GridWorldPNet(torch.nn.Module, AbstractPQNet):
     """
     """
     def __init__(self, agent_settings):
         """
         """
-        super(GridWorldQNet, self).__init__()
+        super(GridWorldPNet, self).__init__()
         self.agent_settings = agent_settings
         #
         self.num_actions = self.agent_settings["num_actions"]
@@ -64,7 +64,8 @@ class GridWorldQNet(torch.nn.Module, AbstractPQNet):
         #
         middle = F.relu(self.linear_0(features))     # [B, M]
         action_values = self.linear_1(middle)        # [B, NA]
-        return action_values
+        action_probs = F.softmax(action_values, -1)
+        return action_probs
 
     #
     def merge_weights_function(self):

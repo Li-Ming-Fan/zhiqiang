@@ -15,7 +15,7 @@ class PriorityBuffer(AbstractBuffer):
         self.buffer_list = []
         self.priority_list = []
         #        
-        self.max_priority = 1.0
+        self.max_priority = 0.0001
         self.len_buffer = 0
         self.position_list = []
         self.probablity_list = []

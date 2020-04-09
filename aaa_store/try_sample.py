@@ -30,3 +30,6 @@ index_2 = torch.LongTensor([[0,1,1],[0,0,0]])
 print(torch.gather(b, dim=1, index=index_1))
 print(torch.gather(b, dim=0, index=index_2))
 
+
+weights = torch.Tensor([0.1, 10, 3, 0.1]) # create a Tensor of weights
+print(torch.multinomial(weights, 1)[0])

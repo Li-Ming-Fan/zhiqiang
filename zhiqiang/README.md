@@ -4,12 +4,19 @@ zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthen
 
 A platform for reinforcement learning algorithms.
 
-Work with PyTorch. But only in the implemented concrete agents and utils.torch_utils.
+Work with PyTorch, but only in the implemented concrete agents and utils.torch_utils.
 
 
 ## Examples
 
-TODO
+Learning curriculum of different agents for the environment GridWorld:
+
+![learning_curriculum](url_link)
+
+
+A replay of a trained VanilaDQN:
+
+![a_replay_gif](url_link)
 
 
 ## Description
@@ -28,7 +35,7 @@ Run commands such as
 AbstractPQNet.print_info()
 AbstractAgent.print_info()
 ```
-to see necessary functions for corresponding concrete classes.
+to see necessary functions for implementing concrete classes.
 
 
 Implemented Trainers and Buffers:
@@ -59,8 +66,7 @@ More:
 │   ├── dqn_mstep.py
 │   ├── dqn_priority.py
 │   ├── dqn_vanila.py
-│   ├── policy_value.py
-│   └── policy_vanila.py
+│   └── policy_replay.py
 ├── envs
 │   └── __init__.py
 ├── replay_buffers
@@ -74,7 +80,8 @@ More:
 └── utils
     ├── __init__.py
     ├── basic_settings.py
-    ├── data_paral.py
+    ├── data_parallelism.py
+    ├── log_parser.py
     ├── torch_utils.py
     └── uct_simple.py
 ```
@@ -96,32 +103,30 @@ from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
 # from zhiqiang.agents.dqn_mstep import MStepDQN as Agent
 # from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
 
+
 # pick a buffer
 from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
 # from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
 
 # pick a trainer
-# from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
-from zhiqiang.trainers.paral_trainer import ParalTrainer as Trainer
+from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
+# from zhiqiang.trainers.paral_trainer import ParalTrainer as Trainer
 
 # settings file
-settings_filepath = "./examples/GridWorld/settings_dqn.json"
+settings_filepath = "./examples/GridWorld/settings_gridworld.json"
 
 ##
-# The following is a common routine.
+#
 from zhiqiang.utils.basic_settings import BasicSettings
 #
 settings = BasicSettings(settings_filepath)
 settings.check_settings()
 settings.display()
 #
-env = Env(settings)
-buffer = Buffer(settings)
-agent = Agent(settings, QNet)
-trainer = Trainer(settings, agent, env, buffer)
+trainer = Trainer(settings, Agent, {"qnet": QNet}, Env, Buffer)
 #
 # train
-list_aver_rewards = trainer.train()
+list_aver_rewards = trainer.do_train()
 #
 # draw
 import matplotlib.pyplot as plt
@@ -140,6 +145,9 @@ plt.ylabel("Averaged Rewards")  # plt.title("Boost Curriculum")
 plt.grid()
 plt.show()
 ```
+
+For utilizing more agents, please see codes in the file examples/GridWorld/script_train_all.py. 
+
 
 ## Installation
 

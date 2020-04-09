@@ -17,10 +17,15 @@ class BasicSettings():
         self.dir_rel_model = "stat_dict"
         self.log_path = None
         self.model_path = None
-        self.model_path_timed = None 
+        self.model_path_timed = None
         #
-        self.agent_settings = {"name": "agentname"}
-        self.env_settings = {"name": "envname"}
+        self.env = "envname"
+        self.agent = "agentname"
+        self.buffer = "buffername"
+        self.trainer = "trainername"
+        #
+        self.agent_settings = {}
+        self.env_settings = {}
         self.buffer_settings = {"buffer_size": 5000}
         self.trainer_settings = {}
         #
@@ -50,10 +55,10 @@ class BasicSettings():
         if not os.path.exists(self.dir_model): os.mkdir(self.dir_model)
         #
         # logger
-        self.str_datetime = time.strftime("%Y-%m-%d-%H-%M-%S")
+        self.str_datetime = time.strftime("%Y_%m_%d_%H_%M_%S")
         if self.log_path is None: self.log_path = os.path.join(
-                self.dir_log, "log_%s_%s_%s.txt" % (self.agent_settings["name"],
-                self.env_settings["name"], self.str_datetime) )
+            self.dir_log, "log_%s_%s_%s.txt" % (
+                self.env, self.agent, self.str_datetime) )
         #
         self.logger = self.create_logger(self.log_path)
         print("settings checked")
@@ -61,9 +66,7 @@ class BasicSettings():
         self.logger.info(self.trans_info_to_dict())
         #
         # model_path
-        agent_name = self.agent_settings["name"]
-        env_name = self.env_settings["name"]
-        model_file = "model_%s_%s_eval.stat_dict" % (env_name, agent_name)
+        model_file = "model_%s_%s_eval.stat_dict" % (self.env, self.agent)
         self.model_path = os.path.join(self.dir_base, self.dir_rel_model, model_file)
         self.model_path_timed = self.model_path.replace("eval", self.str_datetime)
         #

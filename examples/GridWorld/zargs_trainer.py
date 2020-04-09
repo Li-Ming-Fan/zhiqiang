@@ -4,6 +4,8 @@ import argparse
 
 from zhiqiang.utils.basic_settings import BasicSettings
 
+import torch
+
 
 env = "GridWorld"
 agent = "VanilaDQN"
@@ -26,9 +28,9 @@ def parsed_args():
     # Hyper Parameters
     parser = argparse.ArgumentParser()    
     parser.add_argument('--env', default=env, type=str)
-    parser.add_argument('--agent', default=agent, type=int)
-    parser.add_argument('--buffer', default=buffer, type=int)
-    parser.add_argument('--trainer', default=trainer, type=int)
+    parser.add_argument('--agent', default=agent, type=str)
+    parser.add_argument('--buffer', default=buffer, type=str)
+    parser.add_argument('--trainer', default=trainer, type=str)
     #
     parser.add_argument('--mode', default=mode, type=str, help='train, eval, play')
     #
@@ -56,9 +58,6 @@ def settings_with_args(args):
     settings = BasicSettings(settings_filepath)
     settings.assign_info_from_namedspace(args)
     #
-    settings.check_settings()
-    settings.display()
-    #
     return settings
 
 #
@@ -68,8 +67,10 @@ def main(settings):
     # env
     if env == "GridWorld":
         from grid_world import GridWorld as Env
+        from gridworld_pnet import GridWorldPNet as PNet
         from gridworld_qnet import GridWorldQNet as QNet
-        agent_modules = {"qnet": Qnet}
+        from gridworld_vnet import GridWorldVNet as VNet
+        agent_modules = {"qnet": QNet, "pnet": PNet, "vnet": VNet}
     
     # agent
     if agent == "VanilaDQN":
@@ -80,6 +81,12 @@ def main(settings):
         from zhiqiang.agents.dqn_mstep import MStepDQN as Agent
     elif agent == "PriorityDQN":
         from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
+    elif agent == "VanilaACQ":
+        from zhiqiang.agents.acq_vanila import VanilaACQ as Agent
+    elif agent == "VanilaACV":
+        from zhiqiang.agents.acv_vanila import VanilaACV as Agent
+    elif agent == "VanilaPolicy":
+        from zhiqiang.agents.policy_vanila import VanilaPolicy as Agent
     
     # buffer
     if buffer == "SimpleBuffer":

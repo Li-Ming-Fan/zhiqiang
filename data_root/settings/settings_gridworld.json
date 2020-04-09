@@ -3,12 +3,12 @@
     "dir_rel_log": "log",
     "dir_rel_settings": "settings",
     "dir_rel_model": "stat_dict",
-    "agent_settings": {
-        "name": "VanilaDQN",        
+    "agent_settings": {       
         "policy_greedy": 0,
         "policy_epsilon": 0.4,
         "num_actions": 4,
         "gamma": 0.9,
+        "reg_entropy": 0.1,
         "mstep": 5,
         "optimizer_type": "adam",
         "lr": 0.001,
@@ -16,7 +16,6 @@
         "seed": 100
     },
     "env_settings": {
-        "name": "GridWorld",
         "size": 5,
         "partial": 0
     },
