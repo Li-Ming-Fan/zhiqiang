@@ -193,7 +193,7 @@ If you find ZhiQiang helpful, please cite it in your publications.
   year = {2020},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/Li-Ming-Fan/zhiqiang}},
+  howpublished = {\url{https://github.com/Li-Ming-Fan/zhiqiang}}
 }
 ```
 

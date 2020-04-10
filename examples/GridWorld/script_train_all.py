@@ -22,7 +22,7 @@ if __name__ == "__main__":
     agent_list += ["EntropyACQ", "EntropyACV", "SingleACQ", "SingleACV" ]
     agent_list += ["MStepPolicy" ]
     #
-    agent_list = ["EntropyACV" ]
+    agent_list = ["SingleACV" ]
     #
 
     for agent in agent_list:
