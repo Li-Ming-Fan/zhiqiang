@@ -20,13 +20,13 @@ class GridWorldQNet(torch.nn.Module, AbstractPQNet):
         #
         self.num_actions = self.agent_settings["num_actions"]
         num_features = 64
-        # 7*7 --> 6*6 --> 5*5 --> 3*3 --> 1*1
-        self.conv1 = nn.Conv2d(3, 32, 2)
-        self.conv2 = nn.Conv2d(32, 64, 2)
-        self.conv3 = nn.Conv2d(64, 64, 3)
-        self.conv4 = nn.Conv2d(64, num_features, 3)
-        self.linear_0 = nn.Linear(num_features, num_features //2)
-        self.linear_1 = nn.Linear(num_features //2, self.num_actions)
+        # 7*7 --> 5*5 --> 5*5 --> 3*3 --> 3*3
+        self.conv1 = nn.Conv2d(3, 32, 3)
+        self.conv2 = nn.Conv2d(32, 32, 1)  # skip
+        self.conv3 = nn.Conv2d(32, 64, 3)
+        self.conv4 = nn.Conv2d(64, 64, 1)  # skip, flatten
+        self.linear_0 = nn.Linear(64 * 9, num_features)     # 
+        self.linear_1 = nn.Linear(num_features, self.num_actions)
         #
         # optimizer
         params = [p for p in self.parameters() if p.requires_grad]
@@ -58,18 +58,20 @@ class GridWorldQNet(torch.nn.Module, AbstractPQNet):
         batch_permute = s_std.permute(0, 3, 1, 2)    # [B, C, H, W]
         c1 = self.conv1(batch_permute)
         c2 = self.conv2(c1)
-        c3 = self.conv3(c2)
-        c4 = self.conv4(c3)                          # [B, C, 1, 1]
-        features = c4.squeeze(-1).squeeze(-1)
+        c2s = c2 + F.relu(c1)
+        c3 = self.conv3(c2s)
+        c4 = self.conv4(c3)
+        c4s = c4 + F.relu(c3)
+        features = torch.flatten(c4s, 1)
         #
-        middle = F.relu(self.linear_0(features))     # [B, M]
-        action_values = self.linear_1(middle)        # [B, NA]
+        middle = F.relu(self.linear_0(features))       # [B, M]
+        action_values = self.linear_1(middle)          # [B, NA]
         return action_values
 
     #
     def merge_weights_function(self):
         return torch_utils.merge_weights
     #
-        
+
 
 

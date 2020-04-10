@@ -14,8 +14,8 @@ class EntropyACV(AbstractAgent):
     while True:
         a = actor.act(s)
         sp, r, done, info = env.step(a)
-        critic.learn(s, r, sp)
-        actor.learn(s, a, critic(s))
+        td_error = critic.learn(s, r, sp)
+        actor.learn(s, a, td_error)
         s = sp
     """
     def __init__(self, settings, agent_modules, env=None, is_learner=True):
@@ -123,8 +123,8 @@ class EntropyACV(AbstractAgent):
         target = target.detach()
         #
         # loss
-        loss = target - s_v                             # [B, ]        
-        loss = torch.mean(loss ** 2)
+        td_error = target - s_v                         # [B, ]        
+        loss = torch.mean(td_error ** 2)
         #
         self.vnet_learner.back_propagate(loss)
         #
@@ -135,13 +135,13 @@ class EntropyACV(AbstractAgent):
         s_exe_ap = torch.gather(s_ap, 1, indices)        # [B, 1]        
 
         # loss_pg
-        log_ap = torch.log(s_exe_ap.squeeze(-1))       # [B, ]
+        log_ap = torch.log(s_exe_ap.squeeze(-1) + 1e-9)   # [B, ]
         # target
-        target = F.relu(s_v)
+        target = F.relu(td_error)
         target = target.detach()                        # [B, ]
         #
         # entropy
-        log_prob_all = torch.log(s_ap)                     # [B, NA]
+        log_prob_all = torch.log(s_ap + 1e-9)              # [B, NA]
         loss_entropy = torch.sum(s_ap * log_prob_all, -1)  # [B, ]
         #
         # loss
@@ -149,7 +149,7 @@ class EntropyACV(AbstractAgent):
         loss = torch.mean(loss)
         #
         self.pnet_learner.back_propagate(loss)
-        self.update_base_net(self.merge_ksi)
+        # self.update_base_net(self.merge_ksi)
         #
 
     def update_base_net(self, merge_ksi):

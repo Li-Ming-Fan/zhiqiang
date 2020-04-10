@@ -87,7 +87,7 @@ def merge_weights(model_a, model_b, merge_ksi):
     #
 
 #
-class ModelAverage():
+class ModelAverage(object):
     """
     """
     def __init__(self, model, decay_ratio):
@@ -137,3 +137,26 @@ class ModelAverage():
         #
 
 #
+class GradChecker(object):
+    """
+    """
+    def __init__(self):
+        """
+        """
+        self.grads_dict = {}
+    
+    def _save_grad(self, name):
+        def hook(grad):
+            self.grads_dict[name] = grad
+        return hook
+
+    def add_to_checker_dict(self, x, name):
+        """
+        """
+        x.register_hook(self._save_grad(name))
+
+    def get_grad(self, name):
+        """
+        """
+        return self.grads_dict[name]
+    #

@@ -18,10 +18,11 @@ if __name__ == "__main__":
     settings_base = settings_with_args(args)
 
     ##
-    agent_list = ["VanilaDQN", "DoubleDQN", "MStepDQN", "PriorityDQN"]
-    agent_list += ["MStepPolicy", "EntropyACQ", "EntropyACV"]
+    agent_list = ["VanilaDQN", "DoubleDQN", "MStepDQN", "PriorityDQN" ]
+    agent_list += ["EntropyACQ", "EntropyACV", "SingleACQ", "SingleACV" ]
+    agent_list += ["MStepPolicy" ]
     #
-    # agent_list = ["EntropyACV"]
+    agent_list = ["MStepPolicy" ]
     #
 
     for agent in agent_list:

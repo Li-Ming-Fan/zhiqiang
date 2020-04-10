@@ -10,7 +10,7 @@ import torch.nn.functional as F
 
 
 class MStepPolicy(AbstractAgent):
-    """
+    """ m-step policy gradient
     """
     def __init__(self, settings, agent_modules, env=None, is_learner=True):
         """
@@ -69,23 +69,22 @@ class MStepPolicy(AbstractAgent):
         #
 
     def generate(self, base_rewards, max_step_gen, observation=None):
-        """ return: list_experiences, (s, a, r, s', info)
+        """ return: list_experiences, ([s,...], [a,...], [r,...], None, info)
         """
         list_r, list_exp = self.rollout(max_step_gen, observation, "base")
         if sum(list_r) > base_rewards:
             list_mstep_experiences = []
             num_transitions = len(list_exp)
             for idx in range(num_transitions - self.mstep + 1):
-                s_start = list_exp[idx][0]
-                s_end = list_exp[idx + self.mstep - 1][3]
-                s_start_a = list_exp[idx][1]
+                list_s = []
+                list_a = []
+                list_r = []
+                for curr in range(self.mstep):
+                    list_s.append(list_exp[idx + curr][0])
+                    list_a.append(list_exp[idx + curr][1])
+                    list_r.append(list_exp[idx + curr][2])
                 #
-                r_discounted = 0
-                for step in range(self.mstep-1, -1, -1):
-                    r_discounted *= self.gamma_float
-                    r_discounted += list_exp[idx + step][2]
-                #
-                mstep_exp = (s_start, s_start_a, r_discounted, s_end, {"mstep": self.mstep})
+                mstep_exp = (list_s, list_a, list_r, None, None)   # [M, ]
                 list_mstep_experiences.append(mstep_exp)
                 #
             #    
@@ -98,7 +97,17 @@ class MStepPolicy(AbstractAgent):
     def standardize_batch(self, batch_data):
         """ batch_data["data"]: list of (s, a, r, s', info)
         """
-        list_s, list_a, list_r, list_p, list_info = list(zip(*batch_data["data"]))
+        batch_s, batch_a, batch_r, batch_p, batch_i = list(zip(*batch_data["data"]))
+        # batch_s: list of list_s,
+        list_s = []
+        list_a = []
+        list_r = []
+        for curr in range(len(batch_s)):  # [B, ]
+            list_s += batch_s[curr]     # [M, ]
+            list_a += batch_a[curr]
+            list_r += batch_r[curr]
+        #
+        # M*B, [M, M, M, ...]
         #
         s_std = self.pnet_base.trans_list_observations(list_s)
         #
@@ -106,9 +115,6 @@ class MStepPolicy(AbstractAgent):
         batch_std["s_std"] = s_std
         batch_std["a"] = torch.tensor(list_a)
         batch_std["r"] = torch.tensor(list_r)
-        #
-        p_std = self.pnet_base.trans_list_observations(list_p)
-        batch_std["p_std"] = p_std
         #
         return batch_std
         #
@@ -118,33 +124,39 @@ class MStepPolicy(AbstractAgent):
             batch_data["data"]: list of (s, a, r, s', info)
         """
         # s
-        s_std = batch_std["s_std"]
-        s_ap = self.pnet_learner.infer(s_std)
+        s_std = batch_std["s_std"]                     # [M*B, ...]
+        s_ap = self.pnet_learner.infer(s_std)          # [M*B, NA]
         indices = batch_std["a"].long().unsqueeze(-1)
-        s_exe_ap = torch.gather(s_ap, 1, indices)   # [B, 1]
+        s_exe_ap = torch.gather(s_ap, 1, indices)      # [M*B, 1]
         #
         # reward
         reward = batch_std["r"]
-        reward_with_baseline = reward - torch.mean(reward)    # [B, ]
         #
+
+        # reshape to [M, B, D]
+        s_exe_ap_m = s_exe_ap.reshape( (self.mstep, -1))   # [M, B]
+        reward_m = reward.reshape( (self.mstep, -1))       # [M, B]
+        reward_with_baseline = reward_m - torch.mean(reward_m)   # [M, B]
+        s_ap_m = s_ap.reshape( (self.mstep, -1, self.num_actions))  # [M, B, NA]
         
         # loss_pg
-        log_ap = torch.log(s_exe_ap.squeeze(-1))       # [B, ]
+        log_ap = torch.log(s_exe_ap_m + 1e-9)             # [M, B]
         # target
-        target = F.relu(reward_with_baseline)
-        target = target.detach()                        # [B, ]
+        target = F.relu(reward_with_baseline)             # [M, B]
+        target = target.detach()                          # [M, B]
         #
 
         # entropy
-        log_prob_all = torch.log(s_ap)                     # [B, NA]
-        loss_entropy = torch.sum(s_ap * log_prob_all, -1)  # [B, ]
+        log_prob_all = torch.log(s_ap_m + 1e-9)                # [M, B, NA]
+        loss_entropy = torch.sum(s_ap_m * log_prob_all, -1)    # [M, B]
         #
         # loss
-        loss = - target * log_ap - loss_entropy * self.reg_entropy
+        loss_pg = - target * log_ap - loss_entropy * self.reg_entropy
+        loss = torch.sum(loss_pg, 0)           # [B, ] 
         loss = torch.mean(loss)
         #
         self.pnet_learner.back_propagate(loss)
-        self.update_base_net(self.merge_ksi)
+        # self.update_base_net(self.merge_ksi)
         #
 
     def update_base_net(self, merge_ksi):

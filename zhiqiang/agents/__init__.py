@@ -32,7 +32,7 @@ class AbstractAgent(object):
         function update_base_net(self),
         returning nothing
 
-        def copy_params(self, another),
+        function copy_params(self, another),
         returning nothing
 
         ---
@@ -174,7 +174,7 @@ class AbstractPQNet(object):
         pass
     #
     """
-    Assuming torch
+    Assuming torch. They can be override to become customized.
     """ 
     #
     def eval_mode(self):

@@ -83,8 +83,12 @@ def main(settings):
         from zhiqiang.agents.dqn_priority import PriorityDQN as Agent
     elif settings.agent == "EntropyACQ":
         from zhiqiang.agents.acq_entropy import EntropyACQ as Agent
+    elif settings.agent == "SingleACQ":
+        from zhiqiang.agents.acq_single import SingleACQ as Agent
     elif settings.agent == "EntropyACV":
         from zhiqiang.agents.acv_entropy import EntropyACV as Agent
+    elif settings.agent == "SingleACV":
+        from zhiqiang.agents.acv_single import SingleACV as Agent
     elif settings.agent == "MStepPolicy":
         from zhiqiang.agents.policy_mstep import MStepPolicy as Agent
     
