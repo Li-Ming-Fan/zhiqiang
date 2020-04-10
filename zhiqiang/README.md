@@ -187,7 +187,7 @@ For usage examples of this package, please see:
 If you find ZhiQiang helpful, please cite it in your publications.
 
 ```
-@inproceedings{zhiqiang,
+@misc{zhiqiang,
   author = {Ming-Fan Li},
   title = {ZhiQiang, a platform for reinforcement learning},
   year = {2020},
