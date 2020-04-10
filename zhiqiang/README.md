@@ -2,9 +2,7 @@
 
 zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthening.
 
-A platform for reinforcement learning.
-
-The framework does not depend on any specific deep learning platform. But the implemented concrete agents are written with PyTorch.
+A platform for reinforcement learning. The framework does not depend on any specific deep learning platform. But the implemented concrete agents are written with PyTorch.
 
 
 ## Examples
@@ -154,8 +152,6 @@ plt.show()
 
 For utilization of more agents, please see codes in the file examples/GridWorld/script_train_all.py.
 
-Of cource, you can define your own customized agents and networks. 
-
 
 ## Philosophy
 
@@ -190,6 +186,7 @@ For usage examples of this package, please see:
 
 If you find ZhiQiang helpful, please cite it in your publications.
 
+```
 @inproceedings{zhiqiang,
   author = {Ming-Fan Li},
   title = {ZhiQiang, a platform for reinforcement learning},
@@ -198,7 +195,7 @@ If you find ZhiQiang helpful, please cite it in your publications.
   journal = {GitHub repository},
   howpublished = {\url{https://github.com/Li-Ming-Fan/zhiqiang}},
 }
-
+```
 
 
 </br>
