@@ -4,21 +4,22 @@ import time
 import matplotlib.pyplot as plt
 import imageio
 
+# option
+max_step = 50
+use_model = True
+seed = 10
+#
+
 ## settings
 settings_filepath = "./data_root/settings/settings_gridworld.json"
 #
 from zhiqiang.utils.basic_settings import BasicSettings
 settings = BasicSettings(settings_filepath)
+settings.agent_settings["seed"] = seed
 #
 # env
 from grid_world import GridWorld
 env = GridWorld(settings)
-#
-
-# option
-max_step = 50
-use_model = True
-seed = 10
 #
 
 # actor
@@ -30,25 +31,24 @@ def action_decision(state, other_args):
     return a
 #
 # model
-model_path = "./data_root/zzz_reserved/model_GridWorld_EntropyACV_eval.stat_dict"
-from zhiqiang.agents.acv_entropy import EntropyACV as Agent
-#
-from gridworld_pnet import GridWorldPNet as PNet
-from gridworld_vnet import GridWorldVNet as VNet
-#
-settings.agent_settings["seed"] = seed
-#
-agent = Agent(settings, {"pnet": PNet, "vnet": VNet}, env=env, is_learner=False)
-agent.load(model_path)
-#
-other_args = agent
-def action_decision_model(state, other_args):
-    a = agent.act(state)
-    a = a.detach().numpy()
-    return a
-#
-if use_model: action_decision = action_decision_model
-#
+if use_model:
+    model_path = "./data_root/zzz_reserved/model_GridWorld_EntropyACV_eval.stat_dict"
+    from zhiqiang.agents.acv_entropy import EntropyACV as Agent
+    #
+    from gridworld_pnet import GridWorldPNet as PNet
+    from gridworld_vnet import GridWorldVNet as VNet
+    #
+    agent = Agent(settings, {"pnet": PNet, "vnet": VNet}, env=env, is_learner=False)
+    agent.load(model_path)
+    #
+    other_args = agent
+    def action_decision_model(state, other_args):
+        a = agent.act(state)
+        a = a.detach().numpy()
+        return a
+    #
+    action_decision = action_decision_model
+    #
 
 #
 ## task-agnostic

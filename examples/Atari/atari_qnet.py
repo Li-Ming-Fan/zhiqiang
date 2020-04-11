@@ -10,7 +10,7 @@ from zhiqiang.agents import AbstractPQNet
 
 
 class AtariQNet(torch.nn.Module, AbstractPQNet):
-    """
+    """ Atari input image: Box(210, 160, 3)
     """
     def __init__(self, agent_settings):
         """
