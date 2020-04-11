@@ -22,7 +22,7 @@
         "partial": 0
     },
     "buffer_settings": {
-        "buffer_size": 5000
+        "buffer_size": 10000
     },
     "trainer_settings": {
         "num_boost": 200,
@@ -33,7 +33,7 @@
         "batch_size": 32,
         "eval_period": 1,
         "num_eval_rollout": 100,
-        "max_roll_step": 50,
+        "max_roll_step": 200,
         "num_workers": 4
     }
 }

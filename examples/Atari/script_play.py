@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import imageio
 
 # option
-max_step = 180
+max_step = 200
 time_pause = 0.000001
 use_model = False
 seed = 10
@@ -90,13 +90,13 @@ for step in range(max_step):
 #
 # display
 print("display ...")
-gif_images = [ ]
+gif_images = []
 #
 plt.ion()
 # figure = plt.figure(figsize=(4,3))
 for step, item in enumerate(list_state):
     #
-    print(list_action[step])
+    # print(list_action[step])
     #
     pic, picc = display_atari_state(item, show=False, step=step, score=list_score[step])
     gif_images.append(picc)
