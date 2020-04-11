@@ -39,7 +39,7 @@ list_x = [d * 1 for d in range(len(result_dict["VanilaDQN"]))]
 import numpy as np
 import matplotlib.pyplot as plt
 
-figsize_1 = (16, 10)
+figsize_1 = (10, 7)
 #
 fig = plt.figure(figsize=figsize_1)
 #
