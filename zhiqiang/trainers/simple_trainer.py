@@ -50,13 +50,6 @@ class SimpleTrainer(AbstractTrainer):
         #
         return aver_rewards
 
-    def do_play(self, num_times):
-        """
-        """
-        self.agent.load(self.settings.model_path)
-        self.agent.eval_mode()
-        pass
-
     #
     def _eval_for_train(self, num_rollout):
         """
