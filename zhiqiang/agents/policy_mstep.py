@@ -94,10 +94,10 @@ class MStepPolicy(AbstractAgent):
         #
 
     #
-    def standardize_batch(self, batch_data):
-        """ batch_data["data"]: list of (s, a, r, s', info)
+    def standardize_batch(self, batch_sample):
+        """ batch_sample["data"]: list of (s, a, r, s', info)
         """
-        batch_s, batch_a, batch_r, batch_p, batch_i = list(zip(*batch_data["data"]))
+        batch_s, batch_a, batch_r, batch_p, batch_i = list(zip(*batch_sample["data"]))
         # batch_s: list of list_s,
         list_s = []
         list_a = []
@@ -121,7 +121,6 @@ class MStepPolicy(AbstractAgent):
 
     def optimize(self, batch_std, buffer):
         """ optimization step
-            batch_data["data"]: list of (s, a, r, s', info)
         """
         # s
         s_std = batch_std["s_std"]                     # [M*B, ...]

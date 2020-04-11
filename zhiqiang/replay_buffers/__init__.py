@@ -6,7 +6,7 @@ class AbstractBuffer(object):
         function add(self, list_experiences),
         returning nothing
 
-        function sample(self, num),
+        function sample(self, batch_size),
         make a sampling, 
         returning: a dict,
         batch_sample = {"data": [], "position": []}

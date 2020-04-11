@@ -20,8 +20,8 @@ class AbstractAgent(object):
 
         ---
 
-        function standardize_batch(self, batch_data),
-        batch_data: dict, {"data": data, "position": posi}
+        function standardize_batch(self, batch_sample),
+        batch_sample: dict, {"data": data, "position": posi}
         return: batch_std
 
         function optimize(self, batch_std, buffer=None),

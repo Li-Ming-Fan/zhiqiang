@@ -87,10 +87,10 @@ class EntropyACV(AbstractAgent):
         #
 
     #
-    def standardize_batch(self, batch_data):
-        """ batch_data["data"]: list of (s, a, r, s', info)
+    def standardize_batch(self, batch_sample):
+        """ batch_sample["data"]: list of (s, a, r, s', info)
         """
-        list_s, list_a, list_r, list_p, list_info = list(zip(*batch_data["data"]))
+        list_s, list_a, list_r, list_p, list_info = list(zip(*batch_sample["data"]))
         #
         s_std = self.pnet_base.trans_list_observations(list_s)
         #
@@ -107,7 +107,6 @@ class EntropyACV(AbstractAgent):
 
     def optimize(self, batch_std, buffer):
         """ optimization step
-            batch_data["data"]: list of (s, a, r, s', info)
         """
         # s
         s_std = batch_std["s_std"]
