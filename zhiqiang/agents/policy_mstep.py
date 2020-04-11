@@ -30,7 +30,7 @@ class MStepPolicy(AbstractAgent):
         self.policy_epsilon_bak = self.policy_epsilon
         #
         self.num_actions = self.settings.agent_settings["num_actions"]
-        self.gamma_float = torch.tensor(self.settings.agent_settings["gamma"])
+        # self.gamma_tensor = torch.tensor(self.settings.agent_settings["gamma"])
         self.reg_entropy = torch.tensor(self.settings.agent_settings["reg_entropy"])
         self.mstep = self.settings.agent_settings["mstep"]
         #

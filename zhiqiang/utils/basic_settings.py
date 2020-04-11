@@ -56,9 +56,9 @@ class BasicSettings():
         #
         # logger
         self.str_datetime = time.strftime("%Y_%m_%d_%H_%M_%S")
-        if self.log_path is None: self.log_path = os.path.join(
-            self.dir_log, "log_%s_%s_%s.txt" % (
-                self.env, self.agent, self.str_datetime) )
+        log_file = "log_%s_%s_%s.txt" % (self.env, self.agent, self.str_datetime)  
+        if self.log_path is None:
+            self.log_path = os.path.join(self.dir_log, log_file)
         #
         self.logger = self.create_logger(self.log_path)
         print("settings checked")
@@ -67,8 +67,11 @@ class BasicSettings():
         #
         # model_path
         model_file = "model_%s_%s_eval.stat_dict" % (self.env, self.agent)
-        self.model_path = os.path.join(self.dir_base, self.dir_rel_model, model_file)
-        self.model_path_timed = self.model_path.replace("eval", self.str_datetime)
+        model_path_eval = os.path.join(self.dir_model, model_file)
+        if self.model_path is None:
+            self.model_path = model_path_eval
+        #
+        self.model_path_timed = model_path_eval.replace("eval", self.str_datetime)
         #
 
     def create_logger(self, log_path):

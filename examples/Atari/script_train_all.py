@@ -9,7 +9,7 @@ if __name__ == "__main__":
 
     ##
     args.env = "GridWorld"
-    args.settings_file = "settings_gridworld.json"
+    args.settings_file = "settings_atari.json"
 
 
     ##

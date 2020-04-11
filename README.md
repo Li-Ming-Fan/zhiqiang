@@ -1,4 +1,4 @@
-# ZhiQiang
+# ZhiQiang, 之强
 
 zhiqiang, 之强, become strong. And similar to ziqiang, 自强, Self-strengthening.
 
@@ -28,7 +28,7 @@ from zhiqiang.replay_buffers import AbstractBuffer
 from zhiqiang.trainers import AbstractTrainer
 ```
 
-Run commands such as
+Please run commands such as
 ```
 AbstractPQNet.print_info()
 AbstractAgent.print_info()
@@ -44,7 +44,7 @@ from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
 from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
 ```
 
-Some of the implemented Agents:
+Some of the implemented agents:
 ```
 from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
 from zhiqiang.agents.dqn_double import DoubleDQN as Agent
@@ -157,9 +157,9 @@ For utilization of more agents, please see codes in the file examples/GridWorld/
 
 This package does not aim to encompass all kinds of reinforcement learning algorithms, but just to provide a framework for RL solutions of tasks.
 
-An RL solution always involves an environment, an agent (agents) and some neural networks as agent modules. For training the agent (agents), a trainer and a replay buffer are further required. If the interface functions among these parts are well defined, then the different parts can be plug-and-play. This is what this package aims to do.
+An RL solution always involves an environment, an agent (agents) and some neural networks (as agent modules). For training the agent (agents), a trainer and a replay buffer are further required. If interface functions among these parts are well defined, then the different parts can be easy to change as plug-and-play. This is what this package aims to do.
 
-In this package, a set of these inferface functions has been defined, and some simple implementations of the different parts have been conducted. Of cource, users can make their own customized implementations. 
+In this package, a set of inferface functions is defined, and some simple implementations of the different parts are conducted. We hope these will pave way for users to make their own customized definitions and implementations. 
 
 
 ## Installation
@@ -172,14 +172,15 @@ pip install zhiqiang
 
 This package is tested with PyTorch 1.4.0.
 
-The class ParalTrainer cannot work currently due to the multiprocessing issues of PyTorch (please go to the PyTorch issue pages for details).
+The class ParalTrainer cannot work currently. There are issues of PyTorch about the multiprocessing module (please go to the PyTorch issue pages for details).
 
 
 ## Usage
 
 For usage examples of this package, please see:
 
-1, examples/
+1, examples/GridWorld
+2, examples/Atari
 
 
 ## Citation
@@ -187,13 +188,11 @@ For usage examples of this package, please see:
 If you find ZhiQiang helpful, please cite it in your publications.
 
 ```
-@misc{zhiqiang,
+@software{zhiqiang,
   author = {Ming-Fan Li},
   title = {ZhiQiang, a platform for reinforcement learning},
   year = {2020},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/Li-Ming-Fan/zhiqiang}}
+  url = {https://github.com/Li-Ming-Fan/zhiqiang}
 }
 ```
 
