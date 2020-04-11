@@ -14,7 +14,7 @@ Learning curriculum of different agents for the environment GridWorld:
 
 A replay of a trained EntropyACV agent for GridWorld:
 
-<img src="https://github.com/Li-Ming-Fan/zhiqiang/blob/master/aaa_store/a_replay_gif.gif" width="100%" height="100%" alt="gridworld_replay_gif">
+<img src="https://github.com/Li-Ming-Fan/zhiqiang/blob/master/aaa_store/a_replay_gif.gif" width="30%" height="30%" alt="gridworld_replay_gif">
 
 
 ## Description
