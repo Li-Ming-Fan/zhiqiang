@@ -9,12 +9,12 @@ A platform for reinforcement learning. The framework does not depend on any spec
 
 Learning curriculum of different agents for the environment GridWorld:
 
-![learning_curriculum](https://github.com/Li-Ming-Fan/zhiqiang/tree/master/aaa_store/learning_curriculum.png)
+![learning_curriculum](https://github.com/Li-Ming-Fan/zhiqiang/tree/master/aaa_store/learning_curriculum.png?raw=true)
 
 
 A replay of a trained EntropyACV agent for GridWorld:
 
-![a_replay_gif](https://github.com/Li-Ming-Fan/zhiqiang/tree/master/aaa_store/a_replay_gif.gif)
+![a_replay_gif](https://github.com/Li-Ming-Fan/zhiqiang/tree/master/aaa_store/a_replay_gif.gif?raw=true)
 
 
 ## Description
