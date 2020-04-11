@@ -9,12 +9,12 @@ A platform for reinforcement learning. The framework does not depend on any spec
 
 Learning curriculum of different agents for the environment GridWorld:
 
-![learning_curriculum](url_link)
+![learning_curriculum](https://github.com/Li-Ming-Fan/zhiqiang/aaa_store/learning_curriculum.png)
 
 
-A replay of a trained VanilaDQN agent for GridWorld:
+A replay of a trained EntropyACV agent for GridWorld:
 
-![a_replay_gif](url_link)
+![a_replay_gif](https://github.com/Li-Ming-Fan/zhiqiang/aaa_store/a_replay_gif.gif)
 
 
 ## Description
@@ -59,9 +59,7 @@ More:
 ├── agents
 │   ├── __init__.py
 │   ├── acq_entropy.py
-│   ├── acq_single.py
 │   ├── acv_entropy.py
-│   ├── acv_single.py
 │   ├── dqn_double.py
 │   ├── dqn_mstep.py
 │   ├── dqn_priority.py

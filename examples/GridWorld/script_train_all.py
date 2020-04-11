@@ -19,10 +19,9 @@ if __name__ == "__main__":
 
     ##
     agent_list = ["VanilaDQN", "DoubleDQN", "MStepDQN", "PriorityDQN" ]
-    agent_list += ["EntropyACQ", "EntropyACV", "SingleACQ", "SingleACV" ]
-    agent_list += ["MStepPolicy" ]
+    agent_list += ["EntropyACQ", "EntropyACV", "MStepPolicy" ]
     #
-    agent_list = ["MStepPolicy" ]
+    agent_list = ["EntropyACV" ]
     #
 
     for agent in agent_list:

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import imageio
 
 ## settings
-settings_filepath = "./examples/GridWorld/settings_gridworld.json"
+settings_filepath = "./data_root/settings/settings_gridworld.json"
 #
 from zhiqiang.utils.basic_settings import BasicSettings
 settings = BasicSettings(settings_filepath)
@@ -15,10 +15,13 @@ from grid_world import GridWorld
 env = GridWorld(settings)
 #
 
-#
-# actor
+# option
 max_step = 50
-use_model = False
+use_model = True
+seed = 10
+#
+
+# actor
 #
 # random
 other_args = None
@@ -27,11 +30,15 @@ def action_decision(state, other_args):
     return a
 #
 # model
-model_path = "./data_root/stat_dict/model_GridWorld_VanilaDQN_reserved.stat_dict"
-from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
+model_path = "./data_root/zzz_reserved/model_GridWorld_EntropyACV_eval.stat_dict"
+from zhiqiang.agents.acv_entropy import EntropyACV as Agent
 #
-from gridworld_qnet import GridWorldQNet as QNet
-agent = Agent(settings, {"qnet": QNet}, env=env, is_learner=False)
+from gridworld_pnet import GridWorldPNet as PNet
+from gridworld_vnet import GridWorldVNet as VNet
+#
+settings.agent_settings["seed"] = seed
+#
+agent = Agent(settings, {"pnet": PNet, "vnet": VNet}, env=env, is_learner=False)
 agent.load(model_path)
 #
 other_args = agent
