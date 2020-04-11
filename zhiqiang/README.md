@@ -178,6 +178,7 @@ The class ParalTrainer cannot work currently. There are issues of PyTorch about 
 For usage examples of this package, please see:
 
 1, examples/GridWorld
+
 2, examples/Atari
 
 
