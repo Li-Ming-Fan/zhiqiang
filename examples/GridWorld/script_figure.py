@@ -10,8 +10,8 @@ log_files["DoubleDQN"] = "./data_root/zzz_reserved/log_GridWorld_DoubleDQN_2020_
 log_files["MStepDQN"] = "./data_root/zzz_reserved/log_GridWorld_MStepDQN_2020_04_10_21_49_53.txt"
 log_files["PriorityDQN"] = "./data_root/zzz_reserved/log_GridWorld_PriorityDQN_2020_04_10_22_28_07.txt"
 log_files["MStepPolicy"] = "./data_root/zzz_reserved/log_GridWorld_MStepPolicy_2020_04_11_03_03_49.txt"
-log_files["EntripyACQ"] = "./data_root/zzz_reserved/log_GridWorld_EntropyACQ_2020_04_11_00_03_25.txt"
-log_files["EntripyACV"] = "./data_root/zzz_reserved/log_GridWorld_EntropyACV_2020_04_11_00_58_01.txt"
+log_files["EntropyACQ"] = "./data_root/zzz_reserved/log_GridWorld_EntropyACQ_2020_04_11_00_03_25.txt"
+log_files["EntropyACV"] = "./data_root/zzz_reserved/log_GridWorld_EntropyACV_2020_04_11_00_58_01.txt"
 
 curve_color = {}
 curve_color["VanilaDQN"] = "r"
@@ -19,8 +19,8 @@ curve_color["DoubleDQN"] = "b"
 curve_color["MStepDQN"] = "k"
 curve_color["PriorityDQN"] = "g"
 curve_color["MStepPolicy"] = "y"
-curve_color["EntripyACQ"] = "c"
-curve_color["EntripyACV"] = "m"
+curve_color["EntropyACQ"] = "c"
+curve_color["EntropyACV"] = "m"
 
 # result_dicts, parse logs
 result_dict = {}

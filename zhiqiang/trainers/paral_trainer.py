@@ -1,66 +1,10 @@
 
 
 from . import AbstractTrainer
-from ..utils.data_parallelism import split_data_list
+from ..utils.data_parallelism import DataParallelism
 
 import os
 import multiprocessing as mp
-
-#
-class WorkerProcess(mp.Process):
-    """
-    """
-    def __init__(self, settings, agent_class, agent_modules, env_class):
-        """
-        """
-        super(WorkerProcess, self).__init__()
-        #
-        self.settings = settings
-        self.agent = agent_class(settings, agent_modules, is_learner=True)
-        self.agent.env = env_class(settings)
-        #
-        self.mode = "explore"  # "eval"
-        self.list_data = []
-        self.settings_paral = {}
-        #
-        self.result = None
-        #
-
-    def run(self):
-        """
-        """
-        if self.mode == "explore":
-            self.process_gen(self.list_data, self.settings_paral)
-        elif self.mode == "eval":
-            self.process_eval(self.list_data, self.settings_paral)
-        #
-
-    #
-    def process_eval(self, list_data, settings_paral):
-        max_step = settings_paral["max_step"]
-        #
-        list_result = []
-        for curr in range(len(list_data)):
-            total_reward, list_trans = self.agent.rollout(max_step)
-            list_result.append(total_reward)
-        #
-        self.result = list_result
-        #
-
-    #
-    def process_gen(self, list_data, settings_paral):
-        max_step = settings_paral["max_step"]
-        base_rewards = settings_paral["max_aver_rewards"]
-        #
-        list_result = []
-        for curr in range(len(list_data)):
-            expr = self.agent.generate(base_rewards, max_step)
-            if len(expr) > 0:
-                list_result.append(expr)  # list of experiences, training sample   
-        #
-        self.result = list_result
-        #
-    #
 
 #
 class ParalTrainer(AbstractTrainer):
@@ -84,8 +28,16 @@ class ParalTrainer(AbstractTrainer):
         #
         self.list_workers = []
         for idx in range(self.num_workers):
-            worker = WorkerProcess(settings, agent_class, agent_modules, env_class)
-            self.list_workers.append(worker)
+            agent = agent_class(settings, agent_modules, is_learner=False)
+            agent.env = env_class(settings)
+            self.list_workers.append(agent)
+        #
+        # data paral
+        self.data_paral = DataParallelism(self.num_workers)
+        self.resource_queue = mp.Queue()
+        #
+        # import multiprocessing as mp
+        # mp.set_start_method("spawn")
         #
 
         #
@@ -102,9 +54,7 @@ class ParalTrainer(AbstractTrainer):
         self.max_aver_rewards = self.settings.trainer_settings["base_rewards"]
         self.list_aver_rewards = []
         #
-        # import multiprocessing as mp
-        mp.set_start_method("fork")
-        #
+        
 
     def log_info(self, str_info):
         """
@@ -112,6 +62,7 @@ class ParalTrainer(AbstractTrainer):
         print(str_info)
         self.settings.logger.info(str_info)
 
+    #
     def set_workers_mode(self, mode):
         """
         """
@@ -120,21 +71,80 @@ class ParalTrainer(AbstractTrainer):
         self.settings_paral["max_step"] = self.max_step
         #
         for idx in range(self.num_workers):
-            self.list_workers[idx].settings_paral = self.settings_paral
-            #
             if mode == "eval":
-                self.list_workers[idx].agent.eval_mode()
-                self.list_workers[idx].mode = "eval"
+                self.list_workers[idx].eval_mode()
             elif mode == "explore":
-                self.list_workers[idx].agent.explore_mode()
-                self.list_workers[idx].mode = "explore"
+                self.list_workers[idx].explore_mode()
             #
 
     def update_workers_params(self):
         """
         """
         for idx in range(self.num_workers):
-            self.list_workers[idx].agent.copy_params(self.agent)
+            self.list_workers[idx].copy_params(self.agent)
+        #
+
+    def reload_workers_queue(self):
+        """
+        """
+        self.resource_queue = mp.Queue()
+        for idx in range(self.num_workers):
+            self.resource_queue.put(self.list_workers[idx])
+
+    #
+    @staticmethod
+    def _process_eval(list_data, idx, resource_queue, queue, settings_paral):
+        """
+        """
+        max_step = settings_paral["max_step"]
+        agent = resource_queue.get()
+        #
+        list_result = []
+        for item in list_data:
+            total_reward, list_trans = agent.rollout(max_step)
+            list_result.append(total_reward)
+        #
+        queue.put(list_result)
+        #
+
+    @staticmethod
+    def _process_gen(list_data, idx, resource_queue, queue, settings_paral):
+        """
+        """
+        max_step = settings_paral["max_step"]
+        base_rewards = settings_paral["max_aver_rewards"]
+        agent = resource_queue.get()
+        #
+        list_result = []
+        for item in list_data:
+            expr = agent.generate(base_rewards, max_step)
+            if len(expr) > 0:
+                list_result.append(expr)  # list of experiences, training sample   
+        #
+        queue.put(list_result)
+        #
+
+    @staticmethod
+    def _merge_eval_result(processed_queue, settings_paral):
+        """
+        """
+        sum_rewards = 0
+        for curr in range(self.num_workers):
+            sum_curr = sum(processed_queue.get() )
+            sum_rewards += sum_curr
+        #
+        return sum_rewards
+    
+    @staticmethod
+    def _merge_gen_result(processed_queue, settings_paral):
+        """
+        """
+        list_all = []
+        for curr in range(self.num_workers):
+            list_all.extend(processed_queue.get() )
+        #
+        return list_all         # list of experiences
+    #
 
     #
     def do_eval(self, num_rollout):
@@ -150,16 +160,12 @@ class ParalTrainer(AbstractTrainer):
     def _eval_procedure(self, num_rollout):
         """
         """
-        list_split = split_data_list(list(range(num_rollout)), self.num_workers)
-        #
         self.set_workers_mode("eval")                # eval mode
-        for idx in range(self.num_workers):
-            self.list_workers[idx].list_data = list_split[idx]
-            self.list_workers[idx].start()
-        for idx in range(self.num_workers):
-            self.list_workers[idx].join()
+        self.data_paral.do_processing_with_resource(list(range(num_rollout)),
+                ParalTrainer._process_eval, ParalTrainer._merge_eval_result,
+                self.settings_paral)
         #
-        merged_result = self._merge_eval_result()
+        merged_result = self.data_paral.merged_result
         aver_rewards = merged_result / num_rollout
         #
         return aver_rewards
@@ -193,16 +199,12 @@ class ParalTrainer(AbstractTrainer):
         """
         self.log_info("generating experience by %d rollouts ..." % num_rollout)
         #
-        list_split = split_data_list(list(range(num_rollout)), self.num_workers)
-        #
         self.set_workers_mode("explore")               # explore mode
-        for idx in range(self.num_workers):
-            self.list_workers[idx].list_data = list_split[idx]
-            self.list_workers[idx].start()
-        for idx in range(self.num_workers):
-            self.list_workers[idx].join()
+        self.data_paral.do_processing_with_resource(list(range(num_rollout)),
+                ParalTrainer._process_gen, ParalTrainer._merge_gen_result,
+                self.settings_paral)
         #
-        merged_result = self._merge_gen_result()
+        merged_result = self.data_paral.merged_result
         #
         for item in merged_result:     # list of experiences
             self.buffer.add(item)
@@ -213,27 +215,6 @@ class ParalTrainer(AbstractTrainer):
         #
 
     #
-    def _merge_eval_result(self):
-        """
-        """
-        sum_rewards = 0
-        for curr in range(self.num_workers):
-            sum_curr = sum(self.list_workers[curr].result)
-            sum_rewards += sum_curr
-        #
-        return sum_rewards
-    #
-    def _merge_gen_result(self):
-        """
-        """
-        list_all = []
-        for curr in range(self.num_workers):
-            list_all.extend(self.list_workers[curr].result)
-        #
-        return list_all         # list of experiences
-    #
-
-    #
     def do_train(self, model_path=None):
         """
         """
@@ -241,8 +222,9 @@ class ParalTrainer(AbstractTrainer):
         if model_path is not None:
             self.agent.load(self.settings.model_path)
             self.update_workers_params()
-
+        
         # generate experience
+        self.reload_workers_queue()
         self._explore_for_train(self.num_gen_initial)
         #
         # boost      
@@ -253,10 +235,12 @@ class ParalTrainer(AbstractTrainer):
             #
             # eval
             if idx_boost % self.eval_period == 0:
+                self.reload_workers_queue()
                 aver_rewards = self._eval_for_train(self.num_eval_rollout)
                 self.list_aver_rewards.append(aver_rewards)
             #
             # generate experience
+            self.reload_workers_queue()
             self._explore_for_train(self.num_gen_increment)
             #
             # optimize
@@ -276,6 +260,7 @@ class ParalTrainer(AbstractTrainer):
         #
         # final eval
         self.log_info("-" * 70)
+        self.reload_workers_queue()
         aver_rewards = self._eval_for_train(self.num_eval_rollout)
         self.list_aver_rewards.append(aver_rewards)
         #

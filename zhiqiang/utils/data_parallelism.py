@@ -51,11 +51,13 @@ class DataParallelism(object):
     def reset(self):
         """
         """
+        self.resource_queue = multiprocessing.Queue()
         self.processed_queue = multiprocessing.Queue()
         self.merged_result = None
 
     #
-    def do_processing(self, list_data, process_function, merge_function, settings):
+    def do_processing_simple(self, list_data,
+                process_function, merge_function, settings):
         """ process_function(list_data, idx, queue, settings),
             put processed result (a list) into the queue 
             returning: nothing
@@ -105,7 +107,61 @@ class DataParallelism(object):
         self.merged_result = merge_function(self.processed_queue, settings)
         print("processed_queue merged. all finished.")        
 
+    #
+    def do_processing_with_resource(self, list_data,
+                    process_function, merge_function, settings):
+        """ process_function(list_data, idx, resource_queue, queue, settings),
+            get resource from resource_queue,
+            process the data with the resource,
+            put processed result (a list) into the queue 
+            returning: nothing
+            
+            merge_function(processed_queue, settings),
+            returning: required form for downstream tasks
+
+            settings: a list, a tuple, a dict or a namespace,
+            used in process_function and merge_function
+        """
+        # multiprocessing.set_start_method("spawn", force=True)
+
+        # data
+        data_split = split_data_list(list_data, self.num_workers)
+
+        # worker
+        """
+        if self.worker_type == "process":
+            worker_class = multiprocessing.Process        # True Process
+        else:
+            worker_class = multiprocessing.dummy.Process  # A wrapper of Thread
+        """
+        worker_class = multiprocessing.Process
+        print("parent process: %s." % os.getpid())
+        #
+        self._workers = []
+        for idx in range(self.num_workers):
+            p_curr = worker_class(target = process_function,
+                                  args = (data_split[idx], idx,
+                                          self.resource_queue,
+                                          self.processed_queue, settings) )
+            p_curr.daemon = True
+            #
+            self._workers.append(p_curr)
+            print("worker %d created" % idx)
+            #
+    
+        # process
+        for idx in range(self.num_workers):
+            self._workers[idx].start()
+        #
+        for idx in range(self.num_workers):
+            self._workers[idx].join()
+        #
+        print("data processed, begin merging ...")
         
+        # merge
+        self.merged_result = merge_function(self.processed_queue, settings)
+        print("processed_queue merged. all finished.")
+
     
 #
 if __name__ == '__main__':
@@ -137,7 +193,8 @@ if __name__ == '__main__':
     ##
     data_paral = DataParallelism(settings["num_workers"],
                                  worker_type = "thread")
-    data_paral.do_processing(list_data, process_function, merge_function, settings)
+    data_paral.do_processing_simple(list_data,
+                    process_function, merge_function, settings)
 
     print("data_paral result:")
     print(data_paral.merged_result)
