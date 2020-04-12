@@ -170,8 +170,6 @@ pip install zhiqiang
 
 This package is tested with PyTorch 1.4.0.
 
-The class ParalTrainer cannot work currently. There are issues of PyTorch about the multiprocessing module (please go to the PyTorch issue pages for details).
-
 
 ## Usage
 

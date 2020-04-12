@@ -222,7 +222,7 @@ class ParalTrainer(AbstractTrainer):
         if model_path is not None:
             self.agent.load(self.settings.model_path)
             self.update_workers_params()
-        
+
         # generate experience
         self.reload_workers_queue()
         self._explore_for_train(self.num_gen_initial)
