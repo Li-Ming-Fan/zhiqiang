@@ -18,7 +18,7 @@ class EntropyACV(AbstractAgent):
         actor.learn(s, a, td_error)
         s = sp
     """
-    def __init__(self, settings, agent_modules, env=None, is_learner=True):
+    def __init__(self, settings, agent_modules, env=None, learning=True):
         """
         """
         super(EntropyACV, self).__init__()
@@ -39,8 +39,8 @@ class EntropyACV(AbstractAgent):
         self.gamma = torch.tensor(self.settings.agent_settings["gamma"])
         self.reg_entropy = torch.tensor(self.settings.agent_settings["reg_entropy"])
         #
-        self.is_learner = is_learner
-        if self.is_learner:
+        self.learning = learning
+        if self.learning:
             self.vnet_class = agent_modules["vnet"]
             self.vnet_learner = self.vnet_class(self.settings.agent_settings)
             self.pnet_learner = self.pnet_class(self.settings.agent_settings)
@@ -163,7 +163,7 @@ class EntropyACV(AbstractAgent):
         """
         merge_function = self.pnet_base.merge_weights_function()
         merge_function(self.pnet_base, another.pnet_base, 1.0)
-        if self.is_learner:
+        if self.learning:
             merge_function(self.pnet_learner, another.pnet_learner, 1.0)
             merge_function(self.vnet_learner, another.vnet_learner, 1.0)
         
@@ -188,7 +188,7 @@ class EntropyACV(AbstractAgent):
         """
         """
         dict_base = self.pnet_base.state_dict()
-        if self.is_learner:
+        if self.learning:
             dict_pnet_learner = self.pnet_learner.state_dict()
             dict_vnet_learner = self.vnet_learner.state_dict()
         else:
@@ -207,7 +207,7 @@ class EntropyACV(AbstractAgent):
         dict_all = load_data_from_pkl(model_path)
         dict_base = dict_all["pnet_base"]
         self.pnet_base.load_state_dict(dict_base)
-        if self.is_learner:
+        if self.learning:
             dict_pnet_learner = dict_all["pnet_learner"]
             dict_vnet_learner = dict_all["vnet_learner"]
             self.pnet_learner.load_state_dict(dict_pnet_learner)

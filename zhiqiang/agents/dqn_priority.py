@@ -11,7 +11,7 @@ import torch
 class PriorityDQN(AbstractAgent):
     """
     """
-    def __init__(self, settings, agent_modules, env=None, is_learner=True):
+    def __init__(self, settings, agent_modules, env=None, learning=True):
         """
         """
         super(PriorityDQN, self).__init__()
@@ -31,8 +31,8 @@ class PriorityDQN(AbstractAgent):
         self.num_actions = self.settings.agent_settings["num_actions"]
         self.gamma = torch.tensor(self.settings.agent_settings["gamma"])
         #
-        self.is_learner = is_learner
-        if self.is_learner:
+        self.learning = learning
+        if self.learning:
             self.qnet_learner = self.qnet_class(self.settings.agent_settings)
             self.update_base_net(1.0)
             self.merge_ksi = self.settings.agent_settings["merge_ksi"]            
@@ -141,7 +141,7 @@ class PriorityDQN(AbstractAgent):
         """
         merge_function = self.qnet_base.merge_weights_function()
         merge_function(self.qnet_base, another.qnet_base, 1.0)
-        if self.is_learner:
+        if self.learning:
             merge_function(self.qnet_learner, another.qnet_learner, 1.0)
         
     #
@@ -163,7 +163,7 @@ class PriorityDQN(AbstractAgent):
         """
         """
         dict_base = self.qnet_base.state_dict()
-        if self.is_learner:
+        if self.learning:
             dict_learner = self.qnet_learner.state_dict()
         else:
             dict_learner = {}
@@ -178,7 +178,7 @@ class PriorityDQN(AbstractAgent):
         dict_all = load_data_from_pkl(model_path)
         dict_base = dict_all["qnet_base"]
         self.qnet_base.load_state_dict(dict_base)
-        if self.is_learner:
+        if self.learning:
             dict_learner = dict_all["qnet_learner"]
             self.qnet_learner.load_state_dict(dict_learner)
         #

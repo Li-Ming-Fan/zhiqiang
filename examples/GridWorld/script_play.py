@@ -38,7 +38,7 @@ if use_model:
     from gridworld_pnet import GridWorldPNet as PNet
     from gridworld_vnet import GridWorldVNet as VNet
     #
-    agent = Agent(settings, {"pnet": PNet, "vnet": VNet}, env=env, is_learner=False)
+    agent = Agent(settings, {"pnet": PNet, "vnet": VNet}, env=env, learning=False)
     agent.load(model_path)
     #
     other_args = agent

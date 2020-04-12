@@ -46,7 +46,7 @@ if use_model:
     #
     from gridworld_qnet import GridWorldQNet as QNet
     #
-    agent = Agent(settings, {"qnet": QNet}, env=env, is_learner=False)
+    agent = Agent(settings, {"qnet": QNet}, env=env, learning=False)
     agent.load(model_path)
     #
     # action_decision

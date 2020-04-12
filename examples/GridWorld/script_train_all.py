@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     ##
     args.trainer = "SimpleTrainer"
-    # args.trainer = "ParalTrainer"
+    args.trainer = "ParalTrainer"
     settings_base = settings_with_args(args)
 
     ##

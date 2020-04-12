@@ -12,7 +12,7 @@ import torch.nn.functional as F
 class MStepPolicy(AbstractAgent):
     """ m-step policy gradient
     """
-    def __init__(self, settings, agent_modules, env=None, is_learner=True):
+    def __init__(self, settings, agent_modules, env=None, learning=True):
         """
         """
         super(MStepPolicy, self).__init__()
@@ -34,8 +34,8 @@ class MStepPolicy(AbstractAgent):
         self.reg_entropy = torch.tensor(self.settings.agent_settings["reg_entropy"])
         self.mstep = self.settings.agent_settings["mstep"]
         #
-        self.is_learner = is_learner
-        if self.is_learner:
+        self.learning = learning
+        if self.learning:
             self.pnet_learner = self.pnet_class(self.settings.agent_settings)
             self.update_base_net(1.0)
             self.merge_ksi = self.settings.agent_settings["merge_ksi"]
@@ -170,7 +170,7 @@ class MStepPolicy(AbstractAgent):
         """
         merge_function = self.pnet_base.merge_weights_function()
         merge_function(self.pnet_base, another.pnet_base, 1.0)
-        if self.is_learner:
+        if self.learning:
             merge_function(self.pnet_learner, another.pnet_learner, 1.0)
         
     #
@@ -192,7 +192,7 @@ class MStepPolicy(AbstractAgent):
         """
         """
         dict_base = self.pnet_base.state_dict()
-        if self.is_learner:
+        if self.learning:
             dict_learner = self.pnet_learner.state_dict()
         else:
             dict_learner = {}
@@ -207,7 +207,7 @@ class MStepPolicy(AbstractAgent):
         dict_all = load_data_from_pkl(model_path)
         dict_base = dict_all["pnet_base"]
         self.pnet_base.load_state_dict(dict_base)
-        if self.is_learner:
+        if self.learning:
             dict_learner = dict_all["pnet_learner"]
             self.pnet_learner.load_state_dict(dict_learner)
         #

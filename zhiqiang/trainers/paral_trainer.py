@@ -74,7 +74,7 @@ class ParalTrainer(AbstractTrainer):
         self.check_necessary_elements(ParalTrainer)
 
         self.settings = settings
-        self.agent = agent_class(settings, agent_modules, is_learner=True)
+        self.agent = agent_class(settings, agent_modules)
         self.agent.env = env_class(settings)
         self.buffer = buffer_class(settings)
         self.agent.train_mode()                  # train mode
@@ -91,7 +91,7 @@ class ParalTrainer(AbstractTrainer):
         #
         self.list_workers = []
         for idx in range(self.num_workers):
-            agent = agent_class(settings, agent_modules, is_learner=True)
+            agent = agent_class(settings, agent_modules)
             agent.env = env_class(settings)
             self.list_workers.append(agent)
         #
