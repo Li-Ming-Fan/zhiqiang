@@ -14,15 +14,15 @@ if __name__ == "__main__":
 
     ##
     args.trainer = "SimpleTrainer"
-    args.trainer = "ParalTrainer"
+    # args.trainer = "ParalTrainer"
     settings_base = settings_with_args(args)
 
     ##
     agent_list = ["VanilaDQN", "DoubleDQN", "MStepDQN", "PriorityDQN" ]
     agent_list += ["EntropyACQ", "EntropyACV", "MStepPolicy" ]
     #
-    agent_list = ["EntropyACV" ]
-    #    
+    # agent_list = ["EntropyACV" ]
+    #
 
     for agent in agent_list:
         #

@@ -5,6 +5,7 @@ import argparse
 from zhiqiang.utils.basic_settings import BasicSettings
 
 import torch
+torch.multiprocessing.set_sharing_strategy("file_system")
 
 
 env = "GridWorld"
@@ -57,6 +58,7 @@ def settings_with_args(args):
                                      args.settings_file)
     settings = BasicSettings(settings_filepath)
     settings.assign_info_from_namedspace(args)
+    settings.dir_base = args.data_root
     #
     return settings
 
@@ -112,6 +114,8 @@ def main(settings):
     # device
     settings.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') \
         if settings.device_type is None else torch.device(settings.device_type)
+    #
+    print("device: {}".format(settings.device))
     #
 
     # trainer_instance

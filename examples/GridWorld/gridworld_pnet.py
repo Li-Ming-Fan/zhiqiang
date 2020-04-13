@@ -12,11 +12,12 @@ from zhiqiang.agents import AbstractPQNet
 class GridWorldPNet(torch.nn.Module, AbstractPQNet):
     """
     """
-    def __init__(self, agent_settings):
+    def __init__(self, settings):
         """
         """
         super(GridWorldPNet, self).__init__()
-        self.agent_settings = agent_settings
+        self.settings = settings
+        self.agent_settings = settings.agent_settings
         #
         self.num_actions = self.agent_settings["num_actions"]
         num_features = 64
@@ -33,7 +34,7 @@ class GridWorldPNet(torch.nn.Module, AbstractPQNet):
         self.optimizer = torch.optim.Adam(params, lr=self.agent_settings["lr"],
                                           weight_decay=self.agent_settings["l2reg"])
         #
-        self.reset(seed=agent_settings["seed"])
+        self.reset(seed=self.settings.agent_settings["seed"])
         #
 
     def reset(self, seed=100):
@@ -49,7 +50,7 @@ class GridWorldPNet(torch.nn.Module, AbstractPQNet):
             return: s_std, standardized batch of states
         """
         obs_np = np.stack(list_observation, axis=0)
-        obs_tensor = torch.Tensor(obs_np)
+        obs_tensor = torch.Tensor(obs_np).to(self.settings.device)
         return obs_tensor
 
     def infer(self, s_std):

@@ -125,6 +125,14 @@ settings.agent = agent_name
 settings.check_settings()
 settings.display()
 #
+# device
+import torch
+settings.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') \
+    if settings.device_type is None else torch.device(settings.device_type)
+#
+print("device: {}".format(settings.device))
+#
+# trainer
 trainer = Trainer(settings, Agent, {"qnet": QNet}, Env, Buffer)
 #
 # train

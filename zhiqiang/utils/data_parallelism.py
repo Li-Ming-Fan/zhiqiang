@@ -6,7 +6,11 @@ Created on Sat Sep 29 04:11:16 2018
 """
 
 import os
-import multiprocessing
+
+import torch
+torch.multiprocessing.set_sharing_strategy("file_system")
+import torch.multiprocessing as multiprocessing
+
 
 # 
 def split_data_list(list_data, num_split):
@@ -75,10 +79,15 @@ class DataParallelism(object):
         print("parent process: %s." % os.getpid())
         #
         self._workers = []
-        with multiprocessing.Manager() as MG:
-            self.result_dict = multiprocessing.Manager().dict()  # 主进程与子进程共享这个字典 
+        manager = multiprocessing.Manager()
+        with manager:
+            self.result_dict = manager.dict()  # 主进程与子进程共享这个字典
+            #
+            # for idx in range(self.num_workers):
+            #     self.result_dict[idx] = []
             #
             for idx in range(self.num_workers):
+                #
                 p_curr = worker_class(target = process_function,
                                     args = (data_split[idx], idx,
                                             self.result_dict, settings) )
@@ -99,8 +108,10 @@ class DataParallelism(object):
             
             # merge
             self.merged_result = merge_function(self.result_dict, settings)
-            print("result_dict merged. all finished.")
-
+            print("result_dict merged.")
+            #
+        #
+        
 #
 if __name__ == '__main__':
 

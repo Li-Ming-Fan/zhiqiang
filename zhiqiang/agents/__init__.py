@@ -62,7 +62,7 @@ class AbstractAgent(object):
         function rollout(self, max_step, observation=None, mode="learner"),
         returning list_reward, list_transitions
 
-        function eval(self, num_rollout, max_step, observation=None, mode="learner"),
+        function do_eval(self, num_rollout, max_step, observation=None, mode="learner"),
         returning sum_total_rewards / num_rollout
     """
     necessary_elements = ["act", "act_with_learner", "generate"]
@@ -117,7 +117,7 @@ class AbstractAgent(object):
         return list_reward, list_transitions
         #
 
-    def eval(self, num_rollout, max_step, observation=None, mode="learner"):
+    def do_eval(self, num_rollout, max_step, observation=None, mode="learner"):
         """
         """
         sum_total_rewards = 0

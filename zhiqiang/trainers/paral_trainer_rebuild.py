@@ -4,11 +4,12 @@ from . import AbstractTrainer
 from ..utils.data_parallelism import DataParallelism
 
 import os
+import logging
+
 import torch
 torch.multiprocessing.set_sharing_strategy("file_system")
 import torch.multiprocessing as mp
 
-import logging
 
 #
 def process_eval(list_data, idx, result_dict, settings_paral):
@@ -34,9 +35,9 @@ def process_gen(list_data, idx, result_dict, settings_paral):
     #
     list_result = []
     for item in list_data:
-        list_expr = agent.generate(base_rewards, max_step) 
-        if len(list_expr) > 0:         # list of experiences, training sample
-            list_result.append(list_expr)  
+        list_expr = agent.generate(base_rewards, max_step)
+        if len(list_expr) > 0:          # list of experiences, training sample
+            list_result.append(list_expr)     
     #
     result_dict[idx] = list_result
     #
@@ -48,7 +49,7 @@ def merge_eval_result(result_dict, settings_paral):
     #
     sum_rewards = 0
     for idx in range(num_workers):
-        sum_curr = sum( result_dict[idx] )
+        sum_curr = sum(result_dict[idx])
         sum_rewards += sum_curr
     #
     return sum_rewards
@@ -60,9 +61,9 @@ def merge_gen_result(result_dict, settings_paral):
     #
     list_all = []
     for idx in range(num_workers):
-        list_all.extend( result_dict[idx] )
+        list_all.extend(result_dict[idx])
     #
-    return list_all         # list of list of experiences
+    return list_all         # list of experiences
 #
 
 #
@@ -78,7 +79,7 @@ class ParalTrainer(AbstractTrainer):
         self.settings = settings
         self.agent = agent_class(settings, agent_modules)
         self.agent.env = env_class(settings)
-        self.agent.to(self.settings.device)        
+        self.agent.to(settings.device)
         self.agent.train_mode()                  # train mode
         # learner agent (optimization)
 
@@ -88,23 +89,6 @@ class ParalTrainer(AbstractTrainer):
         # self.logger = settings.create_logger(settings.log_path)
         self.logger = logging.getLogger(settings.log_path)
         settings.logger = None               # logger, cannot be pickled
-        #
-
-        # worker agent (evaluation, exploration)
-        self.num_workers = self.settings.trainer_settings["num_workers"]
-        #
-        self.list_workers = []
-        for idx in range(self.num_workers):
-            agent = agent_class(settings, agent_modules)
-            agent.env = env_class(settings)
-            # agent.to(self.settings.device)
-            self.list_workers.append(agent)
-        #
-        # data paral
-        self.data_paral = DataParallelism(self.num_workers)
-        #
-        # import multiprocessing as mp
-        mp.set_start_method("spawn", force=True)
         #
 
         #
@@ -121,7 +105,32 @@ class ParalTrainer(AbstractTrainer):
         self.max_aver_rewards = self.settings.trainer_settings["base_rewards"]
         self.list_aver_rewards = []
         #
-        
+
+        # worker agent (evaluation, exploration)
+        self.num_workers = self.settings.trainer_settings["num_workers"]
+        #
+        self.list_workers = []
+        for idx in range(self.num_workers):
+            agent = agent_class(settings, agent_modules)
+            agent.env = env_class(settings)
+            # agent.to(self.settings.device)
+            self.list_workers.append(agent)
+        #
+        # data_paral
+        self.settings_paral = {"num_workers": self.num_workers }
+        self.settings_paral["max_aver_rewards"] = self.max_aver_rewards
+        self.settings_paral["max_step"] = self.max_step
+        self.settings_paral["list_workers"] = self.list_workers
+        #
+        self.data_paral_eval = DataParallelism(self.num_workers,
+                    process_eval, merge_eval_result, self.settings_paral)
+        #
+        self.data_paral_gen = DataParallelism(self.num_workers,
+                    process_gen, merge_gen_result, self.settings_paral)
+        #
+        # import multiprocessing as mp
+        mp.set_start_method("spawn", force=True)
+        #
 
     def log_info(self, str_info):
         """
@@ -169,12 +178,12 @@ class ParalTrainer(AbstractTrainer):
         """
         """
         self.set_workers_mode("eval")                # eval mode
-        self.data_paral.do_processing(list(range(num_rollout)),
-                process_eval, merge_eval_result,
-                self.settings_paral)
+        self.data_paral_eval.do_processing(list(range(num_rollout)), rebuild=True)
         #
-        merged_result = self.data_paral.merged_result
+        merged_result = self.data_paral_eval.merged_result
         aver_rewards = merged_result / num_rollout
+        #
+        self.data_paral_eval.clear_result_dict()
         #
         return aver_rewards
         #
@@ -208,17 +217,16 @@ class ParalTrainer(AbstractTrainer):
         self.log_info("generating experience by %d rollouts ..." % num_rollout)
         #
         self.set_workers_mode("explore")               # explore mode
-        # data_paral = DataParallelism(self.num_workers)
-        self.data_paral.do_processing(list(range(num_rollout)),
-                process_gen, merge_gen_result,
-                self.settings_paral)
+        self.data_paral_gen.do_processing(list(range(num_rollout)), rebuild=True)
         #
-        merged_result = self.data_paral.merged_result
+        merged_result = self.data_paral_gen.merged_result
         #
-        for item in merged_result:     # item: list of experiences
+        for item in merged_result:     # list of experiences
             self.buffer.add(item)
         #
         count_better = len(merged_result)
+        #
+        self.data_paral_gen.clear_result_dict()
         #
         self.log_info("count_better: %d" % count_better)
         #

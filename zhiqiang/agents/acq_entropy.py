@@ -9,8 +9,9 @@ import torch
 import torch.nn.functional as F
 
 
-class EntropyACQ(AbstractAgent):
-    """
+class EntropyACQ(torch.nn.Module, AbstractAgent):
+    """ Entropy-regularized Actor-Critic with Q-value approximation
+    
     while True:
         a = actor.act(s)
         sp, r, done, info = env.step(a)
@@ -26,7 +27,7 @@ class EntropyACQ(AbstractAgent):
         #
         self.settings = settings
         self.pnet_class = agent_modules["pnet"]        
-        self.pnet_base = self.pnet_class(self.settings.agent_settings)        
+        self.pnet_base = self.pnet_class(self.settings)        
         self.pnet_base.eval_mode()
         self.env = env
         #
@@ -42,8 +43,8 @@ class EntropyACQ(AbstractAgent):
         self.learning = learning
         if self.learning:
             self.qnet_class = agent_modules["qnet"]
-            self.qnet_learner = self.qnet_class(self.settings.agent_settings)
-            self.pnet_learner = self.pnet_class(self.settings.agent_settings)
+            self.qnet_learner = self.qnet_class(self.settings)
+            self.pnet_learner = self.pnet_class(self.settings)
             self.update_base_net(1.0)
             self.merge_ksi = self.settings.agent_settings["merge_ksi"]
         #
@@ -96,8 +97,8 @@ class EntropyACQ(AbstractAgent):
         #
         batch_std = {}
         batch_std["s_std"] = s_std
-        batch_std["a"] = torch.tensor(list_a)
-        batch_std["r"] = torch.tensor(list_r)
+        batch_std["a"] = torch.tensor(list_a).to(self.settings.device)
+        batch_std["r"] = torch.tensor(list_r).to(self.settings.device)
         #
         p_std = self.pnet_base.trans_list_observations(list_p)
         batch_std["p_std"] = p_std

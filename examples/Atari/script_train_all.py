@@ -8,7 +8,7 @@ if __name__ == "__main__":
     args = parsed_args()
 
     ##
-    args.env = "GridWorld"
+    args.env = "Pong-v0"
     args.settings_file = "settings_atari.json"
 
 

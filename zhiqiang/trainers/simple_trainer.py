@@ -14,6 +14,8 @@ class SimpleTrainer(AbstractTrainer):
         self.settings = settings
         self.agent = agent_class(settings, agent_modules)
         self.agent.env = env_class(settings)
+        self.agent.to(settings.device)
+
         self.buffer = buffer_class(settings)
 
         self.num_boost = self.settings.trainer_settings["num_boost"]
@@ -44,7 +46,7 @@ class SimpleTrainer(AbstractTrainer):
         #
         self.agent.load(self.settings.model_path)
         self.agent.eval_mode()
-        aver_rewards = self.agent.eval(num_rollout, self.max_step)
+        aver_rewards = self.agent.do_eval(num_rollout, self.max_step)
         #
         self.log_info("eval aver_rewards: %f" % aver_rewards)
         #
@@ -57,7 +59,7 @@ class SimpleTrainer(AbstractTrainer):
         self.log_info("evaluating with %d rollouts ..." % num_rollout)
         #
         self.agent.eval_mode()                   # eval mode
-        aver_rewards = self.agent.eval(num_rollout, self.max_step)        
+        aver_rewards = self.agent.do_eval(num_rollout, self.max_step)        
         #
         self.log_info("max_aver_rewards, aver_rewards: %f, %f" % (
             self.max_aver_rewards, aver_rewards) )

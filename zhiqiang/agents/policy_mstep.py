@@ -9,7 +9,7 @@ import torch
 import torch.nn.functional as F
 
 
-class MStepPolicy(AbstractAgent):
+class MStepPolicy(torch.nn.Module, AbstractAgent):
     """ m-step policy gradient
     """
     def __init__(self, settings, agent_modules, env=None, learning=True):
@@ -20,7 +20,7 @@ class MStepPolicy(AbstractAgent):
         #
         self.settings = settings
         self.pnet_class = agent_modules["pnet"]
-        self.pnet_base = self.pnet_class(self.settings.agent_settings)        
+        self.pnet_base = self.pnet_class(self.settings)        
         self.pnet_base.eval_mode()
         self.env = env
         #
@@ -36,7 +36,7 @@ class MStepPolicy(AbstractAgent):
         #
         self.learning = learning
         if self.learning:
-            self.pnet_learner = self.pnet_class(self.settings.agent_settings)
+            self.pnet_learner = self.pnet_class(self.settings)
             self.update_base_net(1.0)
             self.merge_ksi = self.settings.agent_settings["merge_ksi"]
         #
@@ -113,8 +113,8 @@ class MStepPolicy(AbstractAgent):
         #
         batch_std = {}
         batch_std["s_std"] = s_std
-        batch_std["a"] = torch.tensor(list_a)
-        batch_std["r"] = torch.tensor(list_r)
+        batch_std["a"] = torch.tensor(list_a).to(self.settings.device)
+        batch_std["r"] = torch.tensor(list_r).to(self.settings.device)
         #
         return batch_std
         #

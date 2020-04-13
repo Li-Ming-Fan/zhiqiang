@@ -33,11 +33,15 @@ class BasicSettings():
         self.trainer_settings["num_gen"] = 100
         self.trainer_settings["num_optim"] = 100
         #
+        self.device_type = None
+        self.device = None
+        #
         self.load_from_json_file(file_path)
         #
         # except from saving
         self.except_list = ["dir_log", "dir_settings", "dir_model", "str_datetime",
-               "log_path", "model_path", "model_path_timed", "except_list"]
+               "log_path", "model_path", "model_path_timed",
+               "device_type", "device", "except_list"]
         #
 
     #
@@ -97,6 +101,8 @@ class BasicSettings():
     def close_logger(self, logger=None):
         if logger is None:
             logger = self.logger
+            if logger is None:
+                return
         for item in logger.handlers:
             item.close()
             print("logger handler item closed")
