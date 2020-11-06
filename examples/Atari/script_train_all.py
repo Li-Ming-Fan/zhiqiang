@@ -35,7 +35,6 @@ if __name__ == "__main__":
             settings.buffer = "SimpleBuffer"
         
         #
-        settings.check_settings()
         settings.display()
         main(settings)
         #

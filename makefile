@@ -23,5 +23,5 @@ test:
 	python -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
 
 clean:
-	rm -rf dist *.egg-info build
+	rm -rf dist *.egg-info build *.eps *.gif
 	find . -name '*.py[co]' | xargs rm -f

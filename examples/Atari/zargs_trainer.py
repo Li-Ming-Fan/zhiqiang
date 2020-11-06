@@ -2,13 +2,13 @@
 import os
 import argparse
 
-from zhiqiang.utils.basic_settings import BasicSettings
+from zhiqiang.utils.settings_baseboard import SettingsBaseboard
 
 import torch
 torch.multiprocessing.set_sharing_strategy("file_system")
 
 
-env = "GridWorld"
+env = "Pong-v0"
 agent = "VanilaDQN"
 buffer = "SimpleBuffer"
 trainer = "SimpleTrainer"
@@ -20,7 +20,7 @@ data_root = "./data_root"
 dir_rel_log = "log"
 dir_rel_settings = "settings"
 dir_rel_model = "stat_dict"
-settings_file = "settings_dqn.json"
+settings_file = "settings_pong.json"
 
 
 def parsed_args():
@@ -56,7 +56,7 @@ def settings_with_args(args):
     """
     settings_filepath = os.path.join(args.data_root, args.dir_rel_settings,
                                      args.settings_file)
-    settings = BasicSettings(settings_filepath)
+    settings = SettingsBaseboard(settings_filepath)
     settings.assign_info_from_namedspace(args)
     settings.dir_base = args.data_root
     #
@@ -95,6 +95,10 @@ def main(settings):
         from zhiqiang.agents.acq_entropy import EntropyACQ as Agent
     elif settings.agent == "EntropyACV":
         from zhiqiang.agents.acv_entropy import EntropyACV as Agent
+    elif settings.agent == "SingleACQ":
+        from zhiqiang.agents.acq_single import SingleACQ as Agent
+    elif settings.agent == "SingleACV":
+        from zhiqiang.agents.acv_single import SingleACV as Agent
     elif settings.agent == "MStepPolicy":
         from zhiqiang.agents.policy_mstep import MStepPolicy as Agent
     
@@ -116,6 +120,10 @@ def main(settings):
         if settings.device_type is None else torch.device(settings.device_type)
     #
     print("device: {}".format(settings.device))
+    #
+
+    # check settigns
+    settings.check_settings()
     #
 
     # trainer_instance

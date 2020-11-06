@@ -14,8 +14,8 @@ seed = 10
 ## settings
 settings_filepath = "./data_root/settings/settings_atari.json"
 #
-from zhiqiang.utils.basic_settings import BasicSettings
-settings = BasicSettings(settings_filepath)
+from zhiqiang.utils.settings_baseboard import SettingsBaseboard
+settings = SettingsBaseboard(settings_filepath)
 settings.agent_settings["seed"] = seed
 #
 

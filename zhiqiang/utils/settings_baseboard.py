@@ -5,7 +5,7 @@ import json
 import logging
 
 
-class BasicSettings():
+class SettingsBaseboard():
     """
     """
     def __init__(self, file_path=None):
@@ -172,7 +172,7 @@ class BasicSettings():
 #       
 if __name__ == '__main__':
     
-    sett = BasicSettings()
+    sett = SettingsBaseboard()
     
     #print(dir(sett))
     #l = [i for i in dir(sett) if inspect.isbuiltin(getattr(sett, i))]

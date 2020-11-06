@@ -7,24 +7,20 @@ from collections import OrderedDict
 log_files = OrderedDict()
 log_files["VanilaDQN"] = "./data_root/zzz_reserved/log_GridWorld_VanilaDQN_2020_04_10_20_23_25.txt"
 log_files["DoubleDQN"] = "./data_root/zzz_reserved/log_GridWorld_DoubleDQN_2020_04_10_21_02_09.txt"
-log_files["PriorityDQN"] = "./data_root/zzz_reserved/log_GridWorld_PriorityDQN_2020_04_10_22_28_07.txt"
 log_files["MStepDQN"] = "./data_root/zzz_reserved/log_GridWorld_MStepDQN_2020_04_10_21_49_53.txt"
+log_files["PriorityDQN"] = "./data_root/zzz_reserved/log_GridWorld_PriorityDQN_2020_04_10_22_28_07.txt"
 log_files["MStepPolicy"] = "./data_root/zzz_reserved/log_GridWorld_MStepPolicy_2020_04_11_03_03_49.txt"
 log_files["EntropyACQ"] = "./data_root/zzz_reserved/log_GridWorld_EntropyACQ_2020_04_11_00_03_25.txt"
 log_files["EntropyACV"] = "./data_root/zzz_reserved/log_GridWorld_EntropyACV_2020_04_11_00_58_01.txt"
-log_files["SingleACQ"] = "./data_root/zzz_reserved/log_GridWorld_SingleACQ_2020_04_11_01_51_13.txt"
-log_files["SingleACV"] = "./data_root/zzz_reserved/log_GridWorld_SingleACV_2020_04_11_02_27_19.txt"
 
 curve_color = {}
 curve_color["VanilaDQN"] = "r"
 curve_color["DoubleDQN"] = "b"
+curve_color["MStepDQN"] = "k"
 curve_color["PriorityDQN"] = "g"
-curve_color["MStepDQN"] = "y"
-curve_color["MStepPolicy"] = "k"
-curve_color["EntropyACQ"] = "darkorange"
-curve_color["EntropyACV"] = "cadetblue"
-curve_color["SingleACQ"] = "c"
-curve_color["SingleACV"] = "m"
+curve_color["MStepPolicy"] = "y"
+curve_color["EntropyACQ"] = "c"
+curve_color["EntropyACV"] = "m"
 
 # result_dicts, parse logs
 result_dict = {}

@@ -30,7 +30,6 @@ class MStepPolicy(torch.nn.Module, AbstractAgent):
         self.policy_epsilon_bak = self.policy_epsilon
         #
         self.num_actions = self.settings.agent_settings["num_actions"]
-        # self.gamma_tensor = torch.tensor(self.settings.agent_settings["gamma"])
         self.reg_entropy = torch.tensor(self.settings.agent_settings["reg_entropy"])
         self.mstep = self.settings.agent_settings["mstep"]
         #
@@ -39,6 +38,12 @@ class MStepPolicy(torch.nn.Module, AbstractAgent):
             self.pnet_learner = self.pnet_class(self.settings)
             self.update_base_net(1.0)
             self.merge_ksi = self.settings.agent_settings["merge_ksi"]
+            #
+            gamma = self.settings.agent_settings["gamma"]
+            gamma_pow = [gamma ** idx for idx in range(self.mstep)]
+            self.gamma_pow = torch.tensor(gamma_pow)          # [M, ]
+            self.gamma_pow = self.gamma_pow.unsqueeze(-1)     # [M, 1]
+            #
         #
     
     #
@@ -141,6 +146,7 @@ class MStepPolicy(torch.nn.Module, AbstractAgent):
         # loss_pg
         log_ap = torch.log(s_exe_ap_m + 1e-9)             # [M, B]
         # target
+        reward_with_baseline = reward_with_baseline * self.gamma_pow
         target = F.relu(reward_with_baseline)             # [M, B]
         target = target.detach()                          # [M, B]
         #

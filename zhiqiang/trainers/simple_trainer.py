@@ -74,6 +74,7 @@ class SimpleTrainer(AbstractTrainer):
             # save
             self.agent.save(self.settings.model_path)
             self.agent.save(self.settings.model_path_timed)
+            #
         #
         return aver_rewards
         #
@@ -110,10 +111,11 @@ class SimpleTrainer(AbstractTrainer):
             self.log_info("-" * 70)
             self.log_info("curr_boost: %d" % idx_boost)
             #
-            # eval            
+            # eval and check            
             if idx_boost % self.eval_period == 0:
                 aver_rewards = self._eval_for_train(self.num_eval_rollout)
                 self.list_aver_rewards.append(aver_rewards)
+                #                
             #
             # generate experience
             self._explore_for_train(self.num_gen_increment)

@@ -8,7 +8,7 @@ import torch
 torch.multiprocessing.set_sharing_strategy("file_system")
 
 
-env = "GridWorld"
+env = "Pong"
 agent = "VanilaDQN"
 buffer = "SimpleBuffer"
 trainer = "SimpleTrainer"
@@ -20,7 +20,7 @@ data_root = "./data_root"
 dir_rel_log = "log"
 dir_rel_settings = "settings"
 dir_rel_model = "stat_dict"
-settings_file = "settings_gridworld.json"
+settings_file = "settings_pong.json"
 
 
 def parsed_args():
@@ -73,6 +73,12 @@ def main(settings):
         from gridworld_qnet import GridWorldQNet as QNet
         from gridworld_vnet import GridWorldVNet as VNet
         agent_modules = {"qnet": QNet, "pnet": PNet, "vnet": VNet}
+    elif settings.env == "Pong":
+        from pong import Pong as Env
+        from pong_qnet import PongQNet as QNet
+        from pong_pnet import PongPNet as PNet
+        from pong_vnet import PongVNet as VNet
+        agent_modules = {"pnet": PNet, "qnet": QNet, "vnet": VNet}
     
     # agent
     if settings.agent == "VanilaDQN":
@@ -99,6 +105,8 @@ def main(settings):
         from zhiqiang.replay_buffers.simple_buffer import SimpleBuffer as Buffer
     elif settings.buffer == "PriorityBuffer":
         from zhiqiang.replay_buffers.priority_buffer import PriorityBuffer as Buffer
+    elif settings.buffer == "FilterBuffer":
+        from zhiqiang.replay_buffers.filter_buffer import FilterBuffer as Buffer
         
     # trainer
     if settings.trainer == "SimpleTrainer":

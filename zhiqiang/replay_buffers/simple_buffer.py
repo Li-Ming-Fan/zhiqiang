@@ -30,8 +30,9 @@ class SimpleBuffer(AbstractBuffer):
         len_buffer = len(self.buffer_list)
         len_exp = len(list_experiences)
         #
-        if len_buffer + len_exp >= self.buffer_size:
-            self.buffer_list[0:len_buffer + len_exp - self.buffer_size] = []
+        d = len_buffer + len_exp - self.buffer_size
+        if d > 0:
+            self.buffer_list[0:d] = []
         #
         self.buffer_list.extend(list_experiences)
         #

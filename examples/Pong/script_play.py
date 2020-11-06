@@ -1,4 +1,5 @@
 
+import random
 import numpy as np
 import time
 import matplotlib.pyplot as plt
@@ -6,20 +7,24 @@ import imageio
 
 # option
 max_step = 50
-use_model = True
-seed = 10
+use_model = False
+seed = 1
+#
+# random.seed(seed)
+# np.random.seed(seed)
 #
 
 ## settings
-settings_filepath = "./data_root/settings/settings_gridworld.json"
+settings_filepath = "./data_root/settings/settings_pong.json"
 #
 from zhiqiang.utils.settings_baseboard import SettingsBaseboard
 settings = SettingsBaseboard(settings_filepath)
 settings.agent_settings["seed"] = seed
 #
 # env
-from grid_world import GridWorld
-env = GridWorld(settings)
+from pong import Pong
+env = Pong(settings)
+num_actions = env.num_actions
 #
 
 # actor
@@ -27,7 +32,8 @@ env = GridWorld(settings)
 # random
 other_args = None
 def action_decision(state, other_args):
-    a = np.random.randint(0, 4)
+    a = np.random.randint(0, num_actions)
+    # a = num_actions - 1
     return a
 #
 # model
@@ -93,5 +99,5 @@ for step, item in enumerate(list_state):
 plt.ioff()
 plt.show()
 #
-imageio.mimsave("gridworld_replay_gif.gif", gif_images, fps=1)
+imageio.mimsave("pong_replay_gif.gif", gif_images, fps=1)
 #

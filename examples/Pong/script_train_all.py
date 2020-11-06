@@ -8,8 +8,8 @@ if __name__ == "__main__":
     args = parsed_args()
 
     ##
-    args.env = "GridWorld"
-    args.settings_file = "settings_gridworld.json"
+    args.env = "Pong"
+    args.settings_file = "settings_pong.json"
 
 
     ##
@@ -21,7 +21,7 @@ if __name__ == "__main__":
     agent_list = ["VanilaDQN", "DoubleDQN", "MStepDQN", "PriorityDQN" ]
     agent_list += ["EntropyACQ", "EntropyACV", "MStepPolicy" ]
     #
-    agent_list = ["SingleACV" ]
+    agent_list = ["EntropyACQ" ]
     #
 
     for agent in agent_list:
@@ -32,7 +32,7 @@ if __name__ == "__main__":
         if "Priority" in agent:
             settings.buffer = "PriorityBuffer"
         else:
-            settings.buffer = "SimpleBuffer"
+            settings.buffer = "FilterBuffer"
         
         #
         settings.display()

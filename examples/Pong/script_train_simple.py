@@ -1,10 +1,13 @@
 
 
 # define an env
-from grid_world import GridWorld as Env
+from pong import Pong as Env
 
 # define a qnet, in PyTorch
-from gridworld_qnet import GridWorldQNet as QNet
+from pong_qnet import PongQNet as QNet
+from pong_pnet import PongPNet as PNet
+from pong_vnet import PongVNet as VNet
+agent_modules = {"pnet": PNet, "qnet": QNet, "vnet": VNet}
 
 # pick an agent
 from zhiqiang.agents.dqn_vanila import VanilaDQN as Agent
@@ -22,9 +25,9 @@ from zhiqiang.trainers.simple_trainer import SimpleTrainer as Trainer
 # from zhiqiang.trainers.paral_trainer import ParalTrainer as Trainer
 
 # settings file, make sure the path is right
-settings_filepath = "./data_root/settings/settings_gridworld.json"
+settings_filepath = "./data_root/settings/settings_pong.json"
 agent_name = "agentname"
-env_name = "GridWorld"
+env_name = "Pong"
 
 ##
 #
@@ -44,7 +47,7 @@ settings.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') \
 print("device: {}".format(settings.device))
 #
 # trainer
-trainer = Trainer(settings, Agent, {"qnet": QNet}, Env, Buffer)
+trainer = Trainer(settings, Agent, agent_modules, Env, Buffer)
 #
 # train
 list_aver_rewards = trainer.do_train()
