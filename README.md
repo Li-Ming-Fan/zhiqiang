@@ -89,7 +89,7 @@ More:
     ├── settings_baseboard.py
     ├── torch_utils.py
     └── uct_simple.py
-
+```
 
 ## Quick Trial
 
